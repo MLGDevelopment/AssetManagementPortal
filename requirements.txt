@@ -11,4 +11,4 @@ phonenumbers==8.10.3
 praw==6.1.0
 psutil==5.4.8
 SQLAlchemy==1.2.16
-Werkzeug==0.14.1
+Werkzeug==0.15.3
