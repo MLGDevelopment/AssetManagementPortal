@@ -6,7 +6,8 @@ from sqlalchemy.sql import or_, asc
 from werkzeug.exceptions import HTTPException
 from werkzeug.utils import secure_filename
 from app import app, bcrypt, logger
-from app.models import db, Users
+from app.models import db, User
+
 from app.forms import RegistrationForm, LoginForm
 from datetime import datetime
 import xlrd
@@ -40,6 +41,7 @@ def init_app():
 
 @app.route('/')
 @app.route('/dashboard')
+@login_required
 def dashboard():
     """
     ROUTE FOR DASHBOARD
@@ -158,19 +160,20 @@ def property_list():
     return render_template('propert_list.html')
 
 
-@app.route("/register", methods=['GET', 'POST'])
+@app.route("/register", methods=['GET','POST'])
 def register():
     if current_user.is_authenticated:
         return redirect('/')
-    form = RegistrationForm()
+    form = RegistrationForm(request.form)
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-        user = Users(first_name=form.first_name.data, last_name=form.last_name.data, company_email=form.company_email.data, password=hashed_password)
+        user = User(first_name=form.first_name.data, last_name=form.last_name.data, company_name=form.company_name.data,
+                    company_email=form.company_email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
         session.clear()
         login_user(user, remember=form.remember.data)
-        flash("Account created for {}".format(form.username.data), 'success')
+        flash("Account created!", 'success')
         # next_page = request.args.get('next')
         # redirect(next_page) if next_page else
         return redirect(url_for('reddit_scraper'))
@@ -189,7 +192,7 @@ def login():
         return redirect(url_for('reddit_scraper'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = Users.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             # session['number'] = consequent_integers.next()
             login_user(user, remember=form.remember.data)
@@ -259,3 +262,12 @@ def upload_file():
     return redirect('company_portal')
 
 
+@app.route("/build_db")
+def build_db():
+    from app.scripts import db_builder
+    if(db_builder.build()):
+        flash("record exists", "error")
+    else:
+        flash("record exists", "success")
+
+    return render_template("am_dashboard.html")

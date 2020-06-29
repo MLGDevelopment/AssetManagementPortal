@@ -3,15 +3,13 @@ from app import app, login_manager
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 import pandas as pd
-import copy
-import datetime
 
 db = SQLAlchemy(app)
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Users.query.get(int(user_id))
+    return User.query.get(int(user_id))
 
 
 class ORM(object):
@@ -101,17 +99,25 @@ class ORM(object):
 #     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
 #     secondary_keyword = db.Column('secondary_keyword', db.String, unique=True)
 
+class Sponsor(db.Model, ORM):
 
-class Users(db.Model, UserMixin, ORM):
+    __tablename__ = 'sponsor'
 
-    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    sponsor_name = db.Column(db.String(60), unique=True, nullable=False)
+    alias = db.Column(db.String(60), nullable=True)
+
+
+class User(db.Model, UserMixin, ORM):
+
+    __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(120), unique=False, nullable=False)
     last_name = db.Column(db.String(120), unique=False, nullable=False)
-    #company_name = db.Column(db.Integer, db.ForeignKey('company.id'))
+    company_name = db.Column(db.Integer, db.ForeignKey('sponsor.id'))
     company_email = db.Column(db.String(120), unique=True, nullable=False)
-    company_phone = db.Column(db.String(11), unique=False, nullable=False)
+    company_phone = db.Column(db.String(11), unique=False, nullable=True)
     password = db.Column(db.String(60), nullable=False)
 
 
@@ -206,7 +212,6 @@ class Users(db.Model, UserMixin, ORM):
 #                                                    imf=self.subject,
 #                                                    wb=self.message,
 #                                                    wto=self.date_sent)
-
 
 
 
