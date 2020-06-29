@@ -40,16 +40,13 @@
 
     {{form.company_name.label(class="small mb-1", for="inputCompanyName")}}
     <div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Select Company
-    </button>
+    <select class="btn btn-secondary dropdown-toggle btn btn-secondary" style="width:100%; background-color:#040670;">
+        {% for each in form.company_name.choices %}
+          <option value="{{each}}"> {{each}} </option>
+        {% endfor %}
+    </select>
 
 
-        <select class="dropdown-menu" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {% for subfield in form.company_name.choices %}
-                <option> {{ subfield }}</option>
-            {% endfor %}
-        </select>
 
     </div>
 
@@ -110,7 +107,7 @@
             {{ form.remember.label(class="custom-control-label", for="rememberPasswordCheck", text="Remember Password")}}
         </div>
     </div>
-    <div class="form-group mt-4 mb-0"><a class="btn btn-primary btn-block" href="{{url_for('login')}}">Create Account</a></div>
+    <div class="form-group mt-4 mb-0"><a class="btn btn-primary btn-block" style="background-color:#040670;" href="{{url_for('login')}}">Create Account</a></div>
 </form>
 </div>
 {% endblock %}
