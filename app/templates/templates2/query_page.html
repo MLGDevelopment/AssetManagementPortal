@@ -1,0 +1,34 @@
+{% extends '/layout.html' %}
+{% block content %}
+<div class = "row-custom">
+
+    <div class="col">
+        <a href="{{url_for('results_page', q='most_expensive_university')}}"> Most Expensive Universities</a>
+    </div>
+    <hr/>
+    <div class="col">
+        <a href="{{url_for('results_page', q='highest_completion')}}"> Highest 4 year completion rate</a>
+    </div>
+    <hr/>
+    <div class="col">
+        <a href="{{url_for('results_page', q='highest_admission_rate')}}"> Highest admission rate</a>
+    </div>
+    <hr/>
+    <div class="col">
+        <a href="{{url_for('results_page', q='highest_faculty_salary')}}"> Highest faculty salary</a>
+    </div>
+    <hr/>
+    <div class="col">
+        <a href="{{url_for('results_page', q='highest_attendance')}}"> Highest attendance academicyear</a>
+    </div>
+    <hr/>
+    <div class="col">
+        <a href="{{url_for('results_page', q='schools_with_men_only')}}"> Schools with men only</a>
+    </div>
+    <hr/>
+    <div class="col">
+        <a href="{{url_for('results_page', q='schools_with_women_only')}}"> Schools with women only</a>
+    </div>
+
+</div>
+{% endblock content %}

@@ -24,6 +24,7 @@ db.session.commit()
 
 ALLOWED_EXTENSIONS = ['csv']
 
+
 @app.before_first_request
 def init_app():
     """
@@ -39,9 +40,13 @@ def init_app():
     # logger.info('EMAIL MANAGER STARTED')
 
 
+@app.route("/properties")
+def properties_view():
+    return render_template("properties.html")
+
+
 @app.route('/')
 @app.route('/dashboard')
-@login_required
 def dashboard():
     """
     ROUTE FOR DASHBOARD
@@ -83,7 +88,12 @@ def account():
     :return:
     """
 
-    return render_template('account.html', title='Account')
+    is_logged_in = current_user.is_authenticated()
+
+    if is_logged_in:
+        print
+
+    return render_template('layout.html', title='Account')
 
 
 @app.route("/about")
@@ -176,7 +186,7 @@ def register():
         flash("Account created!", 'success')
         # next_page = request.args.get('next')
         # redirect(next_page) if next_page else
-        return redirect(url_for('reddit_scraper'))
+        return redirect(url_for('dashboard'))
     return render_template("register.html", title="Register", form=form)
 
 
@@ -189,16 +199,16 @@ def login():
     """
 
     if current_user.is_authenticated:
-        return redirect(url_for('reddit_scraper'))
+        return redirect(url_for('dashboard'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(company_email=form.company_email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             # session['number'] = consequent_integers.next()
             login_user(user, remember=form.remember.data)
 
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('reddit_scraper'))
+            return redirect(next_page) if next_page else redirect(url_for('dashboard'))
         else:
             flash('Login Unsuccessful.', 'danger')
 

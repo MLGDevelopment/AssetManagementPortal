@@ -5,17 +5,17 @@
 <form method="POST">
     {{ form.hidden_tag()}}
     <div class="form-group">
-        {{ form.username.label(class="small mb-1", for="inputEmailAddress") }}
+        {{ form.company_email.label(class="small mb-1", for="inputEmailAddress") }}
         <div>
-        {% if form.username.errors %}
-            {{ form.username(class="form-control form-control-lg is-invalid") }}
+        {% if form.company_email.errors %}
+            {{ form.company_email(class="form-control form-control-lg is-invalid") }}
             <div class="invalid-feedback">
-                {% for error in form.username.errors %}
+                {% for error in form.company_email.errors %}
                     <span> {{ error }} </span>
                 {% endfor %}
             </div>
         {% else %}
-            {{ form.username(class="form-control py-4", id="inputEmailAddress", type="email", placeholder="Enter email address") }}
+            {{ form.company_email(class="form-control py-4", id="inputEmailAddress", type="email", placeholder="Enter email address") }}
         {% endif %}
         </div>
     </div>
@@ -23,10 +23,10 @@
     <div class="form-group">
         {{ form.password.label(class="small mb-1", for="inputPassword") }}
         <div>
-        {% if form.username.errors %}
+        {% if form.password.errors %}
             {{ form.passwprd(class="form-control form-control-lg is-invalid") }}
             <div class="invalid-feedback">
-                {% for error in form.username.errors %}
+                {% for error in form.password.errors %}
                     <span> {{ error }} </span>
                 {% endfor %}
             </div>
@@ -44,7 +44,10 @@
         </div>
     </div>
 
-    <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0"><a class="small" href="{{url_for('password')}}">Forgot Password?</a><a class="btn btn-primary" style="background-color:#040670;" href="index.html">Login</a></div>
+    <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0"><a class="small" href="{{url_for('password')}}">Forgot Password?</a>
+
+        {{ form.submit(class="btn btn-primary",  style="background-color:#040670;") }}
+    </div>
 </form>
 </div>
 {% endblock %}
