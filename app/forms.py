@@ -13,7 +13,7 @@ class RegistrationForm(FlaskForm):
     A class to create a web-form for registering for the site.
     """
 
-    choices = [(i.id, i.sponsor_name) for i in Sponsor.query.all()]
+    choices = [(i.pid, i.name) for i in Sponsor.query.all()]
 
     first_name = StringField('First Name', validators=[DataRequired(), Length(min=2, max=20)])
     last_name = StringField('Last Name', validators=[DataRequired(), Length(min=2, max=20)])

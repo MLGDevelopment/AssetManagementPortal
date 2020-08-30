@@ -1092,7 +1092,7 @@ pre code {
 
   .col-md-2 {
     flex: 0 0 16.6666666667%;
-    max-width: 16.6666666667%;
+    max-width: 100%;
   }
 
   .col-md-3 {
@@ -1132,7 +1132,7 @@ pre code {
 
   .col-md-10 {
     flex: 0 0 83.3333333333%;
-    max-width: 83.3333333333%;
+    max-width: 100%;
   }
 
   .col-md-11 {

@@ -9,7 +9,8 @@
 <div class="row mx-auto">
     {% for i in range(15)%}
     <div class="col-auto mb-2">
-        <div class="card shadow margined" style="min-width: 40rem; max-width: 35rem;">
+        <a href="{{url_for('property_overview')}}">
+            <div class="card shadow margined" style="min-width: 40rem; max-width: 40rem;">
             <div class="card-img-caption">
                 <div class="inner-custom">
                     <img class="card-img-top inner" src="/static/img/properties/mercer.jpg" alt="Card Image cap"/>
@@ -22,9 +23,10 @@
                     T-90 NOI: +3%
                     </div>
                 </div>
-
             </div>
         </div>
+        </a>
+
     </div>
     {% endfor %}
 </div>

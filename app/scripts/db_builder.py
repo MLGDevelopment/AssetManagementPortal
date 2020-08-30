@@ -1,14 +1,17 @@
 import pandas as pd
 import os
-from app.models import db, Sponsor
+from app.models import *
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import sql
 from app import logger
+import traceback
 from flask import flash
+import datetime
 
 curr_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data', "external"))
 mlg_data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data', "mlg"))
-
+db_data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data', "db"))
 
 class DataBaseBuilder:
 
@@ -21,8 +24,6 @@ class DataBaseBuilder:
         # ZCTA_CBSA = os.path.join(data_dir, "ZCTA_CBSA.xlsx")
         # ZCTA_COUNTY = os.path.join(data_dir, "ZCTA_County.xlsx")
         # ZIP_CODES = os.path.join(data_dir, "ZIP Codes.xlsx")
-        SPONSORS = os.path.join(mlg_data_dir, "sponsors.xlsx")
-
         # self.CBSA_DF = pd.read_excel(CBSA)
         # self.COUNTIES_DF = pd.read_excel(COUNTIES)
         # self.DIVISION_DF = pd.read_excel(DIVISION)
@@ -31,35 +32,112 @@ class DataBaseBuilder:
         # self.ZCTA_CBSA_DF = pd.read_excel(ZCTA_CBSA)
         # self.ZCTA_COUNTY_DF = pd.read_excel(ZCTA_COUNTY)
         # self.ZIP_CODES_DF = pd.read_excel(ZIP_CODES)
-        self.SPONSORS_DF = pd.read_excel(SPONSORS)
+        pass
 
-    def build_sponsor_table(self):
-        records = self.SPONSORS_DF.to_dict("records")
+    def build_sponsor(self):
+        sponsors_path = os.path.join(db_data_dir, "sponsors.xlsx")
+        self.sponsors_df = pd.read_excel(sponsors_path)
+        records = self.sponsors_df.to_dict("records")
         try:
             [Sponsor.add_record(Sponsor(**records[i])) for i in range(len(records))]
-            db.session.commit()
-            flash("record inserted", "success")
             return 0
         except IntegrityError:
             db.session.rollback()
             db.session.flush()
             return 1
 
-    def build(self):
-        if (self.build_sponsor_table()):
+    def build_portfolios(self):
+        portfolios_path = os.path.join(db_data_dir, "portfolios.xlsx")
+        self.portfolios_df = pd.read_excel(portfolios_path)
+        records = self.portfolios_df.to_dict("records")
+        try:
+            [Portfolio.add_record(Portfolio(**records[i])) for i in range(len(records))]
+            return 0
+
+        except IntegrityError:
+            db.session.rollback()
+            db.session.flush()
             return 1
 
+    def build_asset_classes(self):
+        asset_classes_path = os.path.join(db_data_dir, "asset_classes.xlsx")
+        self.asset_classes_df = pd.read_excel(asset_classes_path)
+        records = self.asset_classes_df.to_dict("records")
+        try:
+            [AssetClass.add_record(AssetClass(**records[i])) for i in range(len(records))]
+            return 0
+        except IntegrityError:
+            db.session.rollback()
+            db.session.flush()
+            return 1
+
+    def build_asset_categories(self):
+        asset_categories_path = os.path.join(db_data_dir, "asset_categories.xlsx")
+        self.asset_categories_df = pd.read_excel(asset_categories_path)
+        records = self.asset_categories_df.to_dict("records")
+        try:
+            [AssetCategories.add_record(AssetCategories(**records[i])) for i in range(len(records))]
+            return 0
+        except IntegrityError:
+            db.session.rollback()
+            db.session.flush()
+            return 1
+
+    def build_states(self):
+        states_path = os.path.join(db_data_dir, "states.xlsx")
+        self.states_df = pd.read_excel(states_path)
+        records = self.states_df.to_dict("records")
+        try:
+            [State.add_record(State(**records[i])) for i in range(len(records))]
+            return 0
+        except IntegrityError:
+            db.session.rollback()
+            db.session.flush()
+            return 1
+
+    def build_properties(self):
+        """
+        Note: using pandas to insert property data
+        """
+        properties_path = os.path.join(db_data_dir, "properties.xlsx")
+        self.properties_df = pd.read_excel(properties_path, dtype={'state': str,
+                                                                   'zip': str, })
+        self.properties_df = self.properties_df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+        self.properties_df.to_sql('property', con=db.engine, if_exists='append', index=False)
+        db.session.commit()
+
+    def build_qr_table(self):
+        qr_metrics_path = os.path.join(db_data_dir, "propertyreportmetrics.xlsx")
+        self.qr_metrics_df = pd.read_excel(qr_metrics_path)
+
+        records = self.qr_metrics_df.to_dict("records")
+        for record in records:
+            # query db for property
+            res = Property.get_property_by_name(record["property"])
+            if res.report_level == 1:
+                record["date"] = datetime.date(2020, 6, 30)
+                record["property_id"] = res.pid
+                record.pop('property')
+                QuarterlyReportMetrics.add_record(QuarterlyReportMetrics(**record))
+
+    def build(self):
+        if self.build_sponsor():
+            logger.info("Error")
+        if self.build_portfolios():
+            logger.info("Error")
+        if self.build_asset_categories():
+            logger.info("Error")
+        if self.build_asset_classes():
+            logger.info("Error")
+        if self.build_states():
+            logger.info("Error")
+        if self.build_properties():
+            logger.info("Error")
+        #self.build_qr_table()
         return 0
 
 
-def build_sponsors():
-    db_build = DataBaseBuilder()
-    db_build.build()
-
 
 def build():
-    build_sponsors()
-
-
-if __name__ == "__main__":
-    build()
+    db_build = DataBaseBuilder()
+    db_build.build()

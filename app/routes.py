@@ -1,26 +1,35 @@
-import os
-import pandas as pd
 from flask import render_template, flash, redirect, url_for, request, session
 from flask_login import login_user, current_user, logout_user, login_required
-from sqlalchemy.sql import or_, asc
 from werkzeug.exceptions import HTTPException
 from werkzeug.utils import secure_filename
 from app import app, bcrypt, logger
 from app.models import db, User
-
 from app.forms import RegistrationForm, LoginForm
 from datetime import datetime
+import datetime
+from .scripts import Yardi
+import os
+import pandas as pd
 import xlrd
+import json
+import sys
+
+packages_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.append(os.path.join(packages_path, 'Scraping'))
+sys.path.append(os.path.join(packages_path, 'dbConn'))
+from axioDB import session, RentComp, AxioProperty
+from axioScraper import Axio
 
 curr_dir = os.path.dirname(os.path.realpath(__file__))
-data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'data'))
+data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data'))
 mlg_data_dir = os.path.join(data_dir, "mlg")
 external_data_dir = os.path.join(data_dir, "external")
 
 # GLOBALS + ADDITIONAL PARAMS
 pd.set_option('display.max_colwidth', 200)
-db.create_all()
-db.session.commit()
+
+# from .scripts import db_builder
+# db_builder.build()
 
 ALLOWED_EXTENSIONS = ['csv']
 
@@ -38,6 +47,56 @@ def init_app():
     # email_manager.start_wan_writer()
     # email_manager.start_email_engine()
     # logger.info('EMAIL MANAGER STARTED')
+
+
+@app.route("/fetch_axio_property/<axio_id>")
+def fetch_axio_property(axio_id):
+    """
+    ROUTE FOR RETURNING AXIO PROPERTY DATA IN JSON
+    """
+
+    # check if axio_id is in db and if unit mix is as of today
+    today = datetime.date.today()
+    unit_mix_res = RentComp.fetch_rent_comp_as_of(axio_id, today)
+    prop_details_res = -1  # init prop details res
+
+    if unit_mix_res:
+        # unit mix exists per the as of date, pull property details
+        prop_details_res = AxioProperty.fetch_property(axio_id)
+    else:
+        # property not cached, must pull it into db
+        axio = Axio(headless=True)
+        axio.mlg_axio_login()
+        axio.navigate_to_property_report(axio_id)
+        prop_details_res = axio.get_property_details(axio_id, return_res=True)
+        unit_mix_res = axio.get_property_data(axio_id, return_res=True)
+
+    axio_property = dict({
+        "property_name": prop_details_res.property_name,
+        "property_address": prop_details_res.property_address,
+        "year_built": prop_details_res.year_built,
+        "property_website": prop_details_res.property_website,
+        "property_owner": prop_details_res.property_owner,
+        "property_management": prop_details_res.property_management,
+        "property_asset_grade_market": prop_details_res.property_asset_grade_market,
+        "property_asset_grade_submarket": prop_details_res.property_asset_grade_submarket,
+    })
+
+    axio_property["unit_mix"] = [{"index": i,
+                                  "type": r.type,
+                                  "quantity": r.quantity,
+                                  "area": r.area,
+                                  "avg_market_rent": r.avg_market_rent,
+                                  "avg_effective_rent": r.avg_effective_rent}
+                                 for i, r in enumerate(unit_mix_res)]
+
+    json_res = json.dumps(axio_property)
+    return json_res
+
+
+@app.route("/property-overview")
+def property_overview():
+    return render_template("property_overview.html")
 
 
 @app.route("/properties")
@@ -105,64 +164,6 @@ def about():
     """
     # TODO: move out of here
     return render_template("about.html")
-
-
-@app.route('/company_portal', methods=['POST', 'GET'])
-@login_required
-def company_portal():
-
-    post_form = PostForm()
-    form = RedditAccountConfiguration()
-
-    if post_form.validate_on_submit():
-        # UPDATE GLOBALS
-        session['message_content'] = post_form.body.data
-        session['subject_content'] = post_form.subject.data
-
-    if form.validate_on_submit():
-        reddit.refresh_token(form.client_id.data, form.client_secret.data,
-                             form.reddit_password.data, 'test_script', form.reddit_account_username.data)
-
-        reddit.build_connection()
-
-    associations = Company.query.join(primary_key_subscribers).filter(
-        primary_key_subscribers.c.company == current_user.company_name).first()
-
-    if associations:
-        primary_keywords = associations.primary_keywords
-        secondary_keywords = associations.secondary_keywords
-        return render_template('company_portal.html',
-                               primary_keywords=primary_keywords,
-                               secondary_keywords=secondary_keywords,
-                               form=form,
-                               reddit=reddit,
-                               post_form=post_form,
-                               message_content=session['message_content'],
-                               subject_content=session['subject_content'])
-
-    return render_template("company_portal.html",
-                           form=form,
-                           reddit=reddit,
-                           post_form=post_form,
-                           message_content=session['message_content'],
-                           subject_content=session['subject_content'])
-
-
-@app.route('/acquisitions_model')
-def acquisitions_model():
-    """
-    ROUTE FOR MODELING A DEAL
-    :return:
-    """
-    df = pd.read_excel('app/model_fields.xlsx')
-    fields = df.values.tolist()
-    for field in fields:
-        var = field[0]
-        name = var.replace(" ", "_")
-        setattr(AcquisitionForm, name, FloatField(var, validators=[DataRequired()]))
-
-    acq_form = AcquisitionForm()
-    return render_template('acquisitions_model.html', form=acq_form)
 
 
 @app.route('/property_list')
@@ -281,3 +282,61 @@ def build_db():
         flash("record exists", "success")
 
     return render_template("am_dashboard.html")
+
+
+# @app.route('/company_portal', methods=['POST', 'GET'])
+# @login_required
+# def company_portal():
+#
+#     post_form = PostForm()
+#     form = RedditAccountConfiguration()
+#
+#     if post_form.validate_on_submit():
+#         # UPDATE GLOBALS
+#         session['message_content'] = post_form.body.data
+#         session['subject_content'] = post_form.subject.data
+#
+#     if form.validate_on_submit():
+#         reddit.refresh_token(form.client_id.data, form.client_secret.data,
+#                              form.reddit_password.data, 'test_script', form.reddit_account_username.data)
+#
+#         reddit.build_connection()
+#
+#     associations = Company.query.join(primary_key_subscribers).filter(
+#         primary_key_subscribers.c.company == current_user.company_name).first()
+#
+#     if associations:
+#         primary_keywords = associations.primary_keywords
+#         secondary_keywords = associations.secondary_keywords
+#         return render_template('company_portal.html',
+#                                primary_keywords=primary_keywords,
+#                                secondary_keywords=secondary_keywords,
+#                                form=form,
+#                                reddit=reddit,
+#                                post_form=post_form,
+#                                message_content=session['message_content'],
+#                                subject_content=session['subject_content'])
+#
+#     return render_template("company_portal.html",
+#                            form=form,
+#                            reddit=reddit,
+#                            post_form=post_form,
+#                            message_content=session['message_content'],
+#                            subject_content=session['subject_content'])
+
+
+@app.route('/acquisitions_model')
+def acquisitions_model():
+    """
+    ROUTE FOR MODELING A DEAL
+    :return:
+    """
+    df = pd.read_excel('app/model_fields.xlsx')
+    fields = df.values.tolist()
+    for field in fields:
+        var = field[0]
+        name = var.replace(" ", "_")
+        setattr(AcquisitionForm, name, FloatField(var, validators=[DataRequired()]))
+
+    acq_form = AcquisitionForm()
+    return render_template('acquisitions_model.html', form=acq_form)
