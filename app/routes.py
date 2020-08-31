@@ -17,7 +17,7 @@ import sys
 packages_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(os.path.join(packages_path, 'Scraping'))
 sys.path.append(os.path.join(packages_path, 'dbConn'))
-from axioDB import session, RentComp, AxioProperty
+from axioDB import session, RentComp, AxioProperty, AxioPropertyOccupancy
 from axioScraper import Axio
 
 curr_dir = os.path.dirname(os.path.realpath(__file__))
@@ -59,17 +59,20 @@ def fetch_axio_property(axio_id):
     today = datetime.date.today()
     unit_mix_res = RentComp.fetch_rent_comp_as_of(axio_id, today)
     prop_details_res = -1  # init prop details res
+    occupancy = -1
 
     if unit_mix_res:
         # unit mix exists per the as of date, pull property details
         prop_details_res = AxioProperty.fetch_property(axio_id)
+        occupancy = AxioPropertyOccupancy.get_occupancy_as_of_date(axio_id, today)
     else:
         # property not cached, must pull it into db
         axio = Axio(headless=True)
         axio.mlg_axio_login()
         axio.navigate_to_property_report(axio_id)
-        prop_details_res = axio.get_property_details(axio_id, return_res=True)
-        unit_mix_res = axio.get_property_data(axio_id, return_res=True)
+        prop_details_res = axio.get_property_details(axio_id)
+        unit_mix_res = axio.get_property_data(axio_id)
+        occupancy = axio.property_occupancy
 
     axio_property = dict({
         "property_name": prop_details_res.property_name,
@@ -80,6 +83,7 @@ def fetch_axio_property(axio_id):
         "property_management": prop_details_res.property_management,
         "property_asset_grade_market": prop_details_res.property_asset_grade_market,
         "property_asset_grade_submarket": prop_details_res.property_asset_grade_submarket,
+        "property_occpancy": occupancy
     })
 
     axio_property["unit_mix"] = [{"index": i,
