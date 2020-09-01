@@ -49,6 +49,9 @@ def init_app():
     # logger.info('EMAIL MANAGER STARTED')
 
 
+axio = Axio(headless=True)
+axio.mlg_axio_login()
+
 @app.route("/fetch_axio_property/<axio_id>")
 def fetch_axio_property(axio_id):
     """
@@ -57,33 +60,33 @@ def fetch_axio_property(axio_id):
 
     # check if axio_id is in db and if unit mix is as of today
     today = datetime.date.today()
-    unit_mix_res = RentComp.fetch_rent_comp_as_of(axio_id, today)
+
     prop_details_res = -1  # init prop details res
     occupancy = -1
 
-    if unit_mix_res:
+    axio.unit_mix = RentComp.fetch_rent_comp_as_of(axio_id, today)
+    if axio.unit_mix:
         # unit mix exists per the as of date, pull property details
-        prop_details_res = AxioProperty.fetch_property(axio_id)
-        occupancy = AxioPropertyOccupancy.get_occupancy_as_of_date(axio_id, today)
+
+        axio.property_details = AxioProperty.fetch_property(axio_id)
+        axio.property_occupancy = AxioPropertyOccupancy.get_occupancy_as_of_date(axio_id, today)
     else:
         # property not cached, must pull it into db
-        axio = Axio(headless=True)
-        axio.mlg_axio_login()
+
         axio.navigate_to_property_report(axio_id)
-        prop_details_res = axio.get_property_details(axio_id)
-        unit_mix_res = axio.get_property_data(axio_id)
-        occupancy = axio.property_occupancy
+        axio.get_property_details(axio_id)
+        axio.get_property_data(axio_id)
 
     axio_property = dict({
-        "property_name": prop_details_res.property_name,
-        "property_address": prop_details_res.property_address,
-        "year_built": prop_details_res.year_built,
-        "property_website": prop_details_res.property_website,
-        "property_owner": prop_details_res.property_owner,
-        "property_management": prop_details_res.property_management,
-        "property_asset_grade_market": prop_details_res.property_asset_grade_market,
-        "property_asset_grade_submarket": prop_details_res.property_asset_grade_submarket,
-        "property_occpancy": occupancy
+        "property_name": axio.property_details.property_name,
+        "property_address": axio.property_details.property_address,
+        "year_built": axio.property_details.year_built,
+        "property_website": axio.property_details.property_website,
+        "property_owner": axio.property_details.property_owner,
+        "property_management": axio.property_details.property_management,
+        "property_asset_grade_market": axio.property_details.property_asset_grade_market,
+        "property_asset_grade_submarket": axio.property_details.property_asset_grade_submarket,
+        "property_occupancy": float(axio.property_occupancy.occupancy)
     })
 
     axio_property["unit_mix"] = [{"index": i,
@@ -92,7 +95,7 @@ def fetch_axio_property(axio_id):
                                   "area": r.area,
                                   "avg_market_rent": r.avg_market_rent,
                                   "avg_effective_rent": r.avg_effective_rent}
-                                 for i, r in enumerate(unit_mix_res)]
+                                 for i, r in enumerate(axio.unit_mix)]
 
     json_res = json.dumps(axio_property)
     return json_res
