@@ -19,7 +19,6 @@ class RegistrationForm(FlaskForm):
     last_name = StringField('Last Name', validators=[DataRequired(), Length(min=2, max=20)])
     company_name = SelectField('Company Name', choices=choices, validators=[DataRequired()], coerce=int)
     company_email = StringField('Company Email', validators=[DataRequired(), Email()])
-    # company_phone = StringField('Company Phone', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     remember = BooleanField('Remember Me')
@@ -77,4 +76,11 @@ class UpdateAccountForm(FlaskForm):
             email = Users.query.filter_by(username=email.data).first()
             if email:
                 raise ValidationError("email already registered")
+
+
+class AcquisitionsUpload(FlaskForm):
+    file_type = SelectField(u'Select Upload Type', choices=[('1', 'T-12'),
+                                                            ('2', 'Rent Roll'),
+                                                         ])
+
 

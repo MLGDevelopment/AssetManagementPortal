@@ -59,54 +59,7 @@ class ORM(object):
         #     print("error adding single record in models")
 
 
-# primary_key_subscribers = db.Table('primary_key_subscribers',
-#                              db.Column('company', db.Integer, db.ForeignKey('company.id')),
-#                              db.Column('primary_keywords', db.Integer, db.ForeignKey('primary_keywords.id', ondelete='cascade')))
-#
-# secondary_key_subscribers = db.Table('secondary_key_subscribers',
-#                              db.Column('company', db.Integer, db.ForeignKey('company.id')),
-#                              db.Column('secondary_keywords', db.Integer, db.ForeignKey('secondary_keywords.id', ondelete='cascade')))
-#
-# flagged_comments_primary_key_mapping = db.Table('flagged_comments_primary_key_mapping',
-#                                                 db.Column('flagged_comments', db.Integer,
-#                                                           db.ForeignKey('flagged_comments.id', ondelete='cascade')),
-#                                                 db.Column('primary_key', db.Integer,
-#                                                           db.ForeignKey('primary_keywords.id', ondelete='cascade')))
-#
-# flagged_comments_secondary_key_mapping = db.Table('flagged_comments_secondary_key_mapping',
-#                                                 db.Column('flagged_comments', db.Integer,
-#                                                           db.ForeignKey('flagged_comments.id', ondelete='cascade')),
-#                                                 db.Column('secondary_key', db.Integer,
-#                                                           db.ForeignKey('secondary_keywords.id', ondelete='cascade')))
 
-
-# class Company(db.Model, ORM):
-#
-#     __tablename__ = 'company'
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     company_name = db.Column(db.String(120), unique=True, nullable=False)
-#     users = db.relationship('Users', backref='companyname')
-#     primary_keywords = db.relationship('PrimaryKeywords', secondary=primary_key_subscribers, backref=db.backref(
-#         'primary_key_subs', lazy='dynamic'))
-#     secondary_keywords = db.relationship('SecondaryKeywords', secondary=secondary_key_subscribers, backref=db.backref(
-#         'secondary_key_subs', lazy='dynamic'))
-#
-#
-# class PrimaryKeywords(db.Model, ORM):
-#
-#     __tablename__ = 'primary_keywords'
-#
-#     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
-#     primary_keyword = db.Column('primary_keyword', db.String, unique=True)
-#
-#
-# class SecondaryKeywords(db.Model, ORM):
-#
-#     __tablename__ = 'secondary_keywords'
-#
-#     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
-#     secondary_keyword = db.Column('secondary_keyword', db.String, unique=True)
 
 class User(db.Model, UserMixin, ORM):
 
@@ -238,7 +191,6 @@ class Property(db.Model, ORM):
             raise Exception
 
 
-
 class QuarterlyReportMetrics(db.Model, ORM):
 
     __tablename__ = "quarterlyreportmetrics"
@@ -261,17 +213,22 @@ class QuarterlyReportMetrics(db.Model, ORM):
     ytd_distribution_abs = db.Column(db.Numeric, nullable=True)
 
 
+# class FinancialStatementMappings(db.Model, ORM):
+#
+#     __tablename__ = 'financial_statement_mappings'
+#
+#
+# class FinancialStatementCategories(db.model, ORM):
+#
+#     __tablename__ = 'financial_statement_categories'
+#
+#     category_pid = db.Column(db.String, primary_key=True, unique=True)
+#     category_name = db.Column(db.String, primary_key=True, unique=True)
+
+
+
+
 db.session.commit()
-# import contextlib
-# from sqlalchemy import MetaData
-#
-# meta = MetaData()
-#
-# with contextlib.closing(db.engine.connect()) as con:
-#     trans = con.begin()
-#     for table in reversed(meta.sorted_tables):
-#         con.execute(table.delete())
-#     trans.commit()
 #db.drop_all()
 db.create_all()
 db.session.commit()
@@ -371,4 +328,51 @@ db.session.commit()
 #                                                    wto=self.date_sent)
 
 
+# primary_key_subscribers = db.Table('primary_key_subscribers',
+#                              db.Column('company', db.Integer, db.ForeignKey('company.id')),
+#                              db.Column('primary_keywords', db.Integer, db.ForeignKey('primary_keywords.id', ondelete='cascade')))
+#
+# secondary_key_subscribers = db.Table('secondary_key_subscribers',
+#                              db.Column('company', db.Integer, db.ForeignKey('company.id')),
+#                              db.Column('secondary_keywords', db.Integer, db.ForeignKey('secondary_keywords.id', ondelete='cascade')))
+#
+# flagged_comments_primary_key_mapping = db.Table('flagged_comments_primary_key_mapping',
+#                                                 db.Column('flagged_comments', db.Integer,
+#                                                           db.ForeignKey('flagged_comments.id', ondelete='cascade')),
+#                                                 db.Column('primary_key', db.Integer,
+#                                                           db.ForeignKey('primary_keywords.id', ondelete='cascade')))
+#
+# flagged_comments_secondary_key_mapping = db.Table('flagged_comments_secondary_key_mapping',
+#                                                 db.Column('flagged_comments', db.Integer,
+#                                                           db.ForeignKey('flagged_comments.id', ondelete='cascade')),
+#                                                 db.Column('secondary_key', db.Integer,
+#                                                           db.ForeignKey('secondary_keywords.id', ondelete='cascade')))
 
+
+# class Company(db.Model, ORM):
+#
+#     __tablename__ = 'company'
+#
+#     id = db.Column(db.Integer, primary_key=True)
+#     company_name = db.Column(db.String(120), unique=True, nullable=False)
+#     users = db.relationship('Users', backref='companyname')
+#     primary_keywords = db.relationship('PrimaryKeywords', secondary=primary_key_subscribers, backref=db.backref(
+#         'primary_key_subs', lazy='dynamic'))
+#     secondary_keywords = db.relationship('SecondaryKeywords', secondary=secondary_key_subscribers, backref=db.backref(
+#         'secondary_key_subs', lazy='dynamic'))
+#
+#
+# class PrimaryKeywords(db.Model, ORM):
+#
+#     __tablename__ = 'primary_keywords'
+#
+#     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
+#     primary_keyword = db.Column('primary_keyword', db.String, unique=True)
+#
+#
+# class SecondaryKeywords(db.Model, ORM):
+#
+#     __tablename__ = 'secondary_keywords'
+#
+#     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
+#     secondary_keyword = db.Column('secondary_keyword', db.String, unique=True)

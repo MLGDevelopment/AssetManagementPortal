@@ -4,6 +4,8 @@ from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 # from app.scripts import wan_writer
+# import socket
+# socket.getaddrinfo('localhost', 8080)
 
 UPLOAD_FOLDER = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'data', 'tmp'))
 
@@ -13,6 +15,7 @@ app.config['SECRET_KEY'] = '2f64884026723dad15ab1beeaff018fcd1bf29747ad79a2b'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # TODO: ONE FOR TESTING, ONE FOR PROD. SET CAREFULLY
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin@localhost:5432/MLGCapital'
+#app.config['SERVER_NAME'] = 'internalmlg:5000'
 #app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 
 # TODO: IMPLEMENT SOCKETS

@@ -4,7 +4,7 @@ from werkzeug.exceptions import HTTPException
 from werkzeug.utils import secure_filename
 from app import app, bcrypt, logger
 from app.models import db, User
-from app.forms import RegistrationForm, LoginForm
+from app.forms import RegistrationForm, LoginForm, AcquisitionsUpload
 from datetime import datetime
 import datetime
 from .scripts import Yardi
@@ -52,27 +52,24 @@ def init_app():
 axio = Axio(headless=True)
 axio.mlg_axio_login()
 
+
 @app.route("/fetch_axio_property/<axio_id>")
 def fetch_axio_property(axio_id):
     """
-    ROUTE FOR RETURNING AXIO PROPERTY DATA IN JSON
+    ROUTE FOR RETURNING AXIO PROPERTY DATA IN JSON FORM
     """
 
     # check if axio_id is in db and if unit mix is as of today
     today = datetime.date.today()
-
-    prop_details_res = -1  # init prop details res
-    occupancy = -1
-
+    # today = datetime.date(2020, 9, 1)
     axio.unit_mix = RentComp.fetch_rent_comp_as_of(axio_id, today)
-    if axio.unit_mix:
+    axio.property_occupancy = AxioPropertyOccupancy.get_occupancy_as_of_date(axio_id, today)
+    if axio.unit_mix is not None and axio.property_occupancy is not None:
         # unit mix exists per the as of date, pull property details
-
         axio.property_details = AxioProperty.fetch_property(axio_id)
         axio.property_occupancy = AxioPropertyOccupancy.get_occupancy_as_of_date(axio_id, today)
     else:
         # property not cached, must pull it into db
-
         axio.navigate_to_property_report(axio_id)
         axio.get_property_details(axio_id)
         axio.get_property_data(axio_id)
@@ -111,6 +108,16 @@ def properties_view():
     return render_template("properties.html")
 
 
+@app.route("/")
+def home():
+    return render_template("template.html")
+
+
+@app.route("/uw_tools")
+def uw_tools():
+    form = AcquisitionsUpload()
+    return render_template("underwriting_tools.html", form=form)
+
 @app.route('/')
 @app.route('/dashboard')
 def dashboard():
@@ -118,31 +125,32 @@ def dashboard():
     ROUTE FOR DASHBOARD
     :return:
     """
-    def format(x):
-        return "${:.1f}K".format(x/1000)
+    # def format(x):
+    #     return "${:.1f}K".format(x/1000)
+    #
+    # def format_billion(x):
+    #     return f'${int(x):n}'
+    #
+    # _path = os.path.join(mlg_data_dir, 'asset_perf_summary.xlsx')
+    # xlsx = pd.ExcelFile(_path)
+    # df1_mf = pd.read_excel(xlsx, 'multifamily')
+    # df2_comm = pd.read_excel(xlsx, 'commercial')
+    #
+    # df1_mf["Occ Date"] = df1_mf["Occ Date"].map(lambda x: datetime(*xlrd.xldate_as_tuple(x, 0)).date())
+    # df1_mf['Orig Sale Proforma Amt'] = df1_mf['Orig Sale Proforma Amt'].apply(format)
+    #
+    # curr_val_mf = format_billion(df1_mf[' Value Estimate'].sum())
+    # curr_val_comm = format_billion(df2_comm[' Value Estimate'].sum())
+    #
+    # headers = df1_mf.columns.tolist()
+    # df_mf = df1_mf.values.tolist()
 
-    def format_billion(x):
-        return f'${int(x):n}'
-
-    _path = os.path.join(mlg_data_dir, 'asset_perf_summary.xlsx')
-    xlsx = pd.ExcelFile(_path)
-    df1_mf = pd.read_excel(xlsx, 'multifamily')
-    df2_comm = pd.read_excel(xlsx, 'commercial')
-
-    df1_mf["Occ Date"] = df1_mf["Occ Date"].map(lambda x: datetime(*xlrd.xldate_as_tuple(x, 0)).date())
-    df1_mf['Orig Sale Proforma Amt'] = df1_mf['Orig Sale Proforma Amt'].apply(format)
-
-    curr_val_mf = format_billion(df1_mf[' Value Estimate'].sum())
-    curr_val_comm = format_billion(df2_comm[' Value Estimate'].sum())
-
-    headers = df1_mf.columns.tolist()
-    df_mf = df1_mf.values.tolist()
-
-    return render_template("am_dashboard.html",
-                           df_mf=df_mf,
-                           headers=headers,
-                           curr_val_mf=curr_val_mf,
-                           curr_val_comm=curr_val_comm)
+    # return render_template("am_dashboard.html",
+    #                        df_mf=df_mf,
+    #                        headers=headers,
+    #                        curr_val_mf=curr_val_mf,
+    #                        curr_val_comm=curr_val_comm)
+    return "Hello world"
 
 
 @app.route("/account")
