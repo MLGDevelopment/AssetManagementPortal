@@ -6,6 +6,7 @@ from app import app, bcrypt, logger
 from app.models import db, User
 from app.forms import RegistrationForm, LoginForm, AcquisitionsUpload
 from datetime import datetime
+from collections import Counter
 import datetime
 from .scripts import Yardi
 import os
@@ -18,7 +19,7 @@ packages_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 sys.path.append(os.path.join(packages_path, 'Scraping'))
 sys.path.append(os.path.join(packages_path, 'dbConn'))
 from axioDB import session, RentComp, AxioProperty, AxioPropertyOccupancy
-from axioScraper import Axio
+from axioScraper import AxioScraper
 
 curr_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data'))
@@ -32,6 +33,10 @@ pd.set_option('display.max_colwidth', 200)
 # db_builder.build()
 
 ALLOWED_EXTENSIONS = ['csv']
+
+# axio = AxioScraper(headless=True)
+# axio.mlg_axio_login()
+
 
 
 @app.before_first_request
@@ -47,10 +52,6 @@ def init_app():
     # email_manager.start_wan_writer()
     # email_manager.start_email_engine()
     # logger.info('EMAIL MANAGER STARTED')
-
-
-axio = Axio(headless=True)
-axio.mlg_axio_login()
 
 
 @app.route("/fetch_axio_property/<axio_id>")
@@ -98,6 +99,16 @@ def fetch_axio_property(axio_id):
     return json_res
 
 
+@app.route("/axioscraper")
+def axio_scraper():
+    c_properties = session.query(AxioProperty).count()
+    all_p_data = AxioProperty.fetch_all_property_data()
+    all_p_data = [i.__dict__ for i in all_p_data]
+    msa_c = Counter([i["msa"] for i in all_p_data]).most_common()
+    msa_headers = ["MSA", "Count"]
+    return render_template("axioscraper.html", p_count=c_properties, msa_overview=msa_c, msa_headers=msa_headers)
+
+
 @app.route("/property-overview")
 def property_overview():
     return render_template("property_overview.html")
@@ -117,6 +128,7 @@ def home():
 def uw_tools():
     form = AcquisitionsUpload()
     return render_template("underwriting_tools.html", form=form)
+
 
 @app.route('/')
 @app.route('/dashboard')
@@ -145,12 +157,7 @@ def dashboard():
     # headers = df1_mf.columns.tolist()
     # df_mf = df1_mf.values.tolist()
 
-    # return render_template("am_dashboard.html",
-    #                        df_mf=df_mf,
-    #                        headers=headers,
-    #                        curr_val_mf=curr_val_mf,
-    #                        curr_val_comm=curr_val_comm)
-    return "Hello world"
+    return render_template("am_dashboard.html")
 
 
 @app.route("/account")
