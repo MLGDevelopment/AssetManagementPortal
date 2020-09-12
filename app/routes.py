@@ -11,7 +11,6 @@ import datetime
 from .scripts import Yardi
 import os
 import pandas as pd
-import xlrd
 import json
 import sys
 
@@ -34,10 +33,6 @@ pd.set_option('display.max_colwidth', 200)
 
 ALLOWED_EXTENSIONS = ['csv']
 
-# axio = AxioScraper(headless=True)
-# axio.mlg_axio_login()
-
-
 
 @app.before_first_request
 def init_app():
@@ -45,13 +40,9 @@ def init_app():
     LOAD ALL NECESSARY SESSION VARIABLES HERE
     :return:
     """
-    # session['message_content'] = open_message()
-    # session['subject_content'] = open_subject()
-    # logger.info('LOADED MESSAGE CONTENT')
-    # email_manager = EmailManager()
-    # email_manager.start_wan_writer()
-    # email_manager.start_email_engine()
-    # logger.info('EMAIL MANAGER STARTED')
+    axio = AxioScraper(headless=True)
+    axio.mlg_axio_login()
+    session['axio_inst'] = axio
 
 
 @app.route("/fetch_axio_property/<axio_id>")
@@ -59,7 +50,7 @@ def fetch_axio_property(axio_id):
     """
     ROUTE FOR RETURNING AXIO PROPERTY DATA IN JSON FORM
     """
-
+    axio = session["axio_inst"]
     # check if axio_id is in db and if unit mix is as of today
     today = datetime.date.today()
     # today = datetime.date(2020, 9, 1)
@@ -190,7 +181,7 @@ def about():
 
 @app.route('/property_list')
 def property_list():
-    return render_template('propert_list.html')
+    return render_template('property_list.html')
 
 
 @app.route("/register", methods=['GET','POST'])
@@ -304,47 +295,6 @@ def build_db():
         flash("record exists", "success")
 
     return render_template("am_dashboard.html")
-
-
-# @app.route('/company_portal', methods=['POST', 'GET'])
-# @login_required
-# def company_portal():
-#
-#     post_form = PostForm()
-#     form = RedditAccountConfiguration()
-#
-#     if post_form.validate_on_submit():
-#         # UPDATE GLOBALS
-#         session['message_content'] = post_form.body.data
-#         session['subject_content'] = post_form.subject.data
-#
-#     if form.validate_on_submit():
-#         reddit.refresh_token(form.client_id.data, form.client_secret.data,
-#                              form.reddit_password.data, 'test_script', form.reddit_account_username.data)
-#
-#         reddit.build_connection()
-#
-#     associations = Company.query.join(primary_key_subscribers).filter(
-#         primary_key_subscribers.c.company == current_user.company_name).first()
-#
-#     if associations:
-#         primary_keywords = associations.primary_keywords
-#         secondary_keywords = associations.secondary_keywords
-#         return render_template('company_portal.html',
-#                                primary_keywords=primary_keywords,
-#                                secondary_keywords=secondary_keywords,
-#                                form=form,
-#                                reddit=reddit,
-#                                post_form=post_form,
-#                                message_content=session['message_content'],
-#                                subject_content=session['subject_content'])
-#
-#     return render_template("company_portal.html",
-#                            form=form,
-#                            reddit=reddit,
-#                            post_form=post_form,
-#                            message_content=session['message_content'],
-#                            subject_content=session['subject_content'])
 
 
 @app.route('/acquisitions_model')
