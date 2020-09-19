@@ -1,0 +1,37 @@
+2020-09-18 20:02:56,843 - __init__ - INFO - INITIALIZING
+2020-09-18 20:06:01,369 - __init__ - INFO - INITIALIZING
+2020-09-18 20:06:08,032 - __init__ - INFO - INITIALIZING
+2020-09-18 20:06:58,837 - __init__ - INFO - INITIALIZING
+2020-09-18 20:07:06,090 - __init__ - INFO - INITIALIZING
+2020-09-18 20:07:09,786 - __init__ - INFO - INITIALIZING
+2020-09-18 20:09:27,673 - __init__ - INFO - INITIALIZING
+2020-09-18 20:11:13,802 - __init__ - INFO - INITIALIZING
+2020-09-18 20:12:23,548 - __init__ - INFO - INITIALIZING
+2020-09-18 20:12:45,547 - __init__ - INFO - INITIALIZING
+2020-09-18 20:13:37,529 - __init__ - INFO - INITIALIZING
+2020-09-18 20:13:45,275 - __init__ - ERROR - Exception on / [GET]
+Traceback (most recent call last):
+  File "c:\python36\venv\amp\lib\site-packages\flask\app.py", line 2446, in wsgi_app
+    response = self.full_dispatch_request()
+  File "c:\python36\venv\amp\lib\site-packages\flask\app.py", line 1944, in full_dispatch_request
+    self.try_trigger_before_first_request_functions()
+  File "c:\python36\venv\amp\lib\site-packages\flask\app.py", line 1992, in try_trigger_before_first_request_functions
+    func()
+  File ".\routes.py", line 45, in init_app
+    session['axio_inst'] = axio
+TypeError: 'Session' object does not support item assignment
+2020-09-18 20:13:53,633 - __init__ - ERROR - Exception on / [GET]
+Traceback (most recent call last):
+  File "c:\python36\venv\amp\lib\site-packages\flask\app.py", line 2446, in wsgi_app
+    response = self.full_dispatch_request()
+  File "c:\python36\venv\amp\lib\site-packages\flask\app.py", line 1944, in full_dispatch_request
+    self.try_trigger_before_first_request_functions()
+  File "c:\python36\venv\amp\lib\site-packages\flask\app.py", line 1992, in try_trigger_before_first_request_functions
+    func()
+  File ".\routes.py", line 45, in init_app
+    session['axio_inst'] = axio
+TypeError: 'Session' object does not support item assignment
+2020-09-18 20:14:35,960 - __init__ - INFO - INITIALIZING
+2020-09-18 20:14:37,168 - __init__ - INFO - INITIALIZING
+2020-09-18 20:38:00,664 - __init__ - INFO - INITIALIZING
+2020-09-18 20:38:02,413 - __init__ - INFO - INITIALIZING

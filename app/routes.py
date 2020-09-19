@@ -2,23 +2,23 @@ from flask import render_template, flash, redirect, url_for, request, session
 from flask_login import login_user, current_user, logout_user, login_required
 from werkzeug.exceptions import HTTPException
 from werkzeug.utils import secure_filename
-from app import app, bcrypt, logger
-from app.models import db, User
-from app.forms import RegistrationForm, LoginForm, AcquisitionsUpload
+from __init__ import app, bcrypt, logger
+from models import db, User
+from forms import RegistrationForm, LoginForm, AcquisitionsUpload
 from datetime import datetime
 from collections import Counter
 import datetime
-from .scripts import Yardi
+#from .scripts import Yardi
 import os
 import pandas as pd
 import json
 import sys
 
-packages_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-sys.path.append(os.path.join(packages_path, 'Scraping'))
-sys.path.append(os.path.join(packages_path, 'dbConn'))
-from axioDB import session, RentComp, AxioProperty, AxioPropertyOccupancy
-from axioScraper import AxioScraper
+#packages_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+#sys.path.append(os.path.join(packages_path, 'Scraping'))
+#sys.path.append(os.path.join(packages_path, 'dbConn'))
+#from axioDB import session, RentComp, AxioProperty, AxioPropertyOccupancy
+#from axioScraper import AxioScraper
 
 curr_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data'))
@@ -40,9 +40,10 @@ def init_app():
     LOAD ALL NECESSARY SESSION VARIABLES HERE
     :return:
     """
-    axio = AxioScraper(headless=True)
-    axio.mlg_axio_login()
-    session['axio_inst'] = axio
+    #axio = AxioScraper(headless=True)
+    #axio.mlg_axio_login()
+    #session['axio_inst'] = axio
+    pass
 
 
 @app.route("/fetch_axio_property/<axio_id>")

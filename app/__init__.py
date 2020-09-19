@@ -48,5 +48,5 @@ def build_logger():
 
 
 logger = build_logger()
-from app import routes
+import routes
 

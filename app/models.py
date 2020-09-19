@@ -1,5 +1,5 @@
 __author__ = 'Nik Burmeister'
-from app import app, login_manager
+from __init__ import app, login_manager
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 import pandas as pd

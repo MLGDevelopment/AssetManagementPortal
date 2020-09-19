@@ -2,9 +2,8 @@ from flask_wtf import FlaskForm, Form
 from wtforms import TextAreaField, SelectField
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from app.models import Sponsor
+from models import Sponsor, User
 from flask_login import current_user
-from app.models import User
 import phonenumbers
 
 
