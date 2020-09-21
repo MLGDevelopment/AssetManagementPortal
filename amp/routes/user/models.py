@@ -14,6 +14,7 @@ from amp.constants import USER, USER_ROLE, ADMIN, INACTIVE, USER_STATUS, \
 
 import pandas as pd
 
+
 class User(db.Model, UserMixin):
 
     __tablename__ = 'users'
@@ -112,6 +113,7 @@ class User(db.Model, UserMixin):
     def check_name(self, name):
         return User.query.filter(db.and_(
             User.name == name, User.email != self.id)).count() == 0
+
 
 class ORM(object):
 
@@ -273,6 +275,10 @@ class Property(db.Model, ORM):
             # todo: error
             raise Exception
 
+    @staticmethod
+    def get_all_property_data():
+        res = Property.query.all()
+        return res
 
 class QuarterlyReportMetrics(db.Model, ORM):
 

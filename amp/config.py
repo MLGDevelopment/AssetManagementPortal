@@ -41,6 +41,7 @@ class DefaultConfig(BaseConfig):
     TO_ADDRS = [""]
     MAIL_USERNAME = ""
     MAIL_PASSWORD = ""
+    PROPERTY_PHOTOS_DIR = "C:\\Users\\nburmeister\Documents\\_Development\\QR_Automation\\img"
 
     # Flask-Sqlalchemy: http://packages.python.org/Flask-SQLAlchemy/config.html
     SQLALCHEMY_ECHO = False

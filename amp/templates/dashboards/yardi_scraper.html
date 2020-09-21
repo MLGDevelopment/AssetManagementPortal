@@ -1,0 +1,60 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<h1 class="mt-4">YardiScraper Overview</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active"><button type="button" class="btn btn-success">Run YardiScraper</button></li>
+</ol>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-body">Last Time Updated: </div>
+            <h1 style="margin-left: 3%;"><font>{{_data["last_update"]}}</font></h1>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="#">View Details</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header"><i class="fas fa-table mr-1"></i>AxioStatics Breakdown</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="max-width:100%; white-space:nowrap;">
+                <thead>
+                    <tr>
+                        {% for col in _data["yardi_headers"] %}
+                            <th>{{col}}</th>
+                        {% endfor %}
+
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        {% for col in _data["yardi_headers"] %}
+                            <th>{{col}}</th>
+                        {% endfor %}
+
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for row in _data["yardi_data"] %}
+                        <tr>
+                            {% for col in row %}
+                                <td>{{col}}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

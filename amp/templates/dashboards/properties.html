@@ -7,20 +7,20 @@
 </ol>
 
 <div class="row mx-auto">
-    {% for i in range(15)%}
-    <div class="col-auto mb-2">
+    {% for property in properties %}
+    <div class="col-auto mb-4">
         <a href="{{url_for('frontend.property_overview')}}">
-            <div class="card shadow margined" style="min-width: 40rem; max-width: 40rem;">
+            <div class="card shadow margined" style="margin-bottom: 2rem; height: 15rem; min-width: 1rem; max-width: 30rem;">
             <div class="card-img-caption">
                 <div class="inner-custom">
-                    <img class="card-img-top inner" src="/static/img/properties/mercer.jpg" alt="Card Image cap"/>
+                    <img class="card-img-top inner" src="static/img/properties/img/{{property.img_path}}" alt="Card Image cap"/>
                 </div>
                 <div class="content-post-info">
                     <div class="article-title">
-                    Mercer Crossing
+                    {{ property.name }}
                     </div>
                     <div class="article-date">
-                    T-90 NOI: +3%
+                    {{ property.city }}, {{ property.property_state.name }}
                     </div>
                 </div>
             </div>

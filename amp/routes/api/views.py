@@ -15,14 +15,19 @@ packages_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..',
 sys.path.append(os.path.join(packages_path, 'Scraping'))
 sys.path.append(os.path.join(packages_path, 'dbConn'))
 from axioDB import RentComp, AxioProperty, AxioPropertyOccupancy
+from axioScraper import AxioScraper
 
 api = Blueprint('api', __name__, url_prefix='/api')
 api_wrap = Api(api)
+
+axio = AxioScraper(headless=True)
+axio.mlg_axio_login()
 
 
 class TodoItem(Resource):
     def get(self, id):
         return {'task': 'Say "Hello, World!"'}
+
 
 api_wrap.add_resource(TodoItem, '/todos/<int:id>')
 
@@ -49,12 +54,13 @@ def logout():
         logout_user()
     return jsonify(flag='success', msg='Logouted.')
 
+
 @api.route("/fetch_axio_property/<axio_id>")
 def fetch_axio_property(axio_id):
     """
     ROUTE FOR RETURNING AXIO PROPERTY DATA IN JSON FORM
     """
-    # axio = session["axio_inst"]
+
     # check if axio_id is in db and if unit mix is as of today
     today = datetime.date.today()
     # today = datetime.date(2020, 9, 1)
