@@ -280,6 +280,7 @@ class Property(db.Model, ORM):
         res = Property.query.all()
         return res
 
+
 class QuarterlyReportMetrics(db.Model, ORM):
 
     __tablename__ = "quarterlyreportmetrics"

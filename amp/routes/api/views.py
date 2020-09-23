@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import os, sys
+import os
+import sys
 import json
 
 from flask import Blueprint, request, jsonify
@@ -8,6 +9,7 @@ from flask_login import login_user, current_user, logout_user
 from flask_restful import Api, Resource
 
 from amp.routes.user import User
+from amp.routes.user.models import *
 
 import datetime
 
@@ -16,6 +18,7 @@ sys.path.append(os.path.join(packages_path, 'Scraping'))
 sys.path.append(os.path.join(packages_path, 'dbConn'))
 from axioDB import RentComp, AxioProperty, AxioPropertyOccupancy
 from axioScraper import AxioScraper
+from yardi import *
 
 api = Blueprint('api', __name__, url_prefix='/api')
 api_wrap = Api(api)
@@ -77,15 +80,24 @@ def fetch_axio_property(axio_id):
         axio.get_property_data(axio_id)
 
     axio_property = dict({
-        "property_name": axio.property_details.property_name,
-        "property_address": axio.property_details.property_address,
-        "year_built": axio.property_details.year_built,
-        "property_website": axio.property_details.property_website,
-        "property_owner": axio.property_details.property_owner,
-        "property_management": axio.property_details.property_management,
-        "property_asset_grade_market": axio.property_details.property_asset_grade_market,
-        "property_asset_grade_submarket": axio.property_details.property_asset_grade_submarket,
+        "property_name": axio.property_details.property_name
+        if axio.property_details.property_name is not None else "",
+        "property_address": axio.property_details.property_address
+        if axio.property_details.property_address is not None else "",
+        "year_built": axio.property_details.year_built
+        if axio.property_details.year_built is not None else "",
+        "property_website": axio.property_details.property_website
+        if axio.property_details.property_website is not None else "",
+        "property_owner": axio.property_details.property_owner
+        if axio.property_details.property_owner is not None else "",
+        "property_management": axio.property_details.property_management
+        if axio.property_details.property_management is not None else "",
+        "property_asset_grade_market": axio.property_details.property_asset_grade_market
+        if axio.property_details.property_asset_grade_market is not None else "",
+        "property_asset_grade_submarket": axio.property_details.property_asset_grade_submarket
+        if axio.property_details.property_asset_grade_submarket is not None else "",
         "property_occupancy": float(axio.property_occupancy.occupancy)
+        if axio.property_occupancy.occupancy is not None else -1
     })
 
     axio_property["unit_mix"] = [{"index": i,
@@ -98,3 +110,13 @@ def fetch_axio_property(axio_id):
 
     json_res = json.dumps(axio_property)
     return json_res
+
+
+@api.route('/yardi')
+def yardi():
+    properties = Property.query.filter(Property.yardi_id != 'nan')
+    start = '1/1/2019'
+    end = '8/24/2020'
+    yardi = Yardi(headless=False)
+    yardi.pull_multifamily_stats(properties, start, end)
+
