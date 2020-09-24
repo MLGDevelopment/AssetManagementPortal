@@ -7,6 +7,7 @@ import json
 from flask import Blueprint, request, jsonify
 from flask_login import login_user, current_user, logout_user
 from flask_restful import Api, Resource
+from flask_api import status
 
 from amp.routes.user import User
 from amp.routes.user.models import *
@@ -75,9 +76,34 @@ def fetch_axio_property(axio_id):
         axio.property_occupancy = AxioPropertyOccupancy.get_occupancy_as_of_date(axio_id, today)
     else:
         # property not cached, must pull it into db
-        axio.navigate_to_property_report(axio_id)
-        axio.get_property_details(axio_id)
-        axio.get_property_data(axio_id)
+        res = axio.navigate_to_property_report(axio_id)
+        if res != 0:
+            axio.get_property_details(axio_id)
+            axio.get_property_data(axio_id)
+        else:
+            # Dummy response for invalid ID
+            axio_property = dict({
+                "property_name": "DNE",
+                "property_address": "DNE",
+                "year_built": "DNE",
+                "property_website": "DNE",
+                "property_owner": "DNE",
+                "property_management": "DNE",
+                "property_asset_grade_market": "DNE",
+                "property_asset_grade_submarket": "DNE",
+                "property_occupancy": 0.0,
+            })
+
+            axio_property["unit_mix"] = [{"index": i,
+                                          "type": "DNE",
+                                          "quantity": i,
+                                          "area": i,
+                                          "avg_market_rent": i,
+                                          "avg_effective_rent": i}
+                                         for i in range(1, 30)]
+
+            json_res = json.dumps(axio_property)
+            return json_res, status.HTTP_400_BAD_REQUEST
 
     axio_property = dict({
         "property_name": axio.property_details.property_name
