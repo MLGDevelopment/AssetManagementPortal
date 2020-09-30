@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Dashboard - SB Admin</title>
+        <title>MLG Internal</title>
         <link href="{{url_for('static', filename='css/styles.css')}}" rel="stylesheet" />
         <link href="{{url_for('static', filename='css/customstyles.css')}}" rel="stylesheet" />
         <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
@@ -43,7 +43,7 @@
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">Core</div>
                             <a class="nav-link" href="{{url_for('frontend.properties_view')}}"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>All Properties</a>
-                            <a class="nav-link" href="{{url_for('frontend.axio_scraper')}}"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>AxioScraper</a>
+                            <a class="nav-link" href="{{url_for('frontend.axio_scraper')}}"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>MSA Data</a>
                             <a class="nav-link" href="{{url_for('frontend.yardi_scraper')}}"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>YardiScraper</a>
                             <div class="sb-sidenav-menu-heading">Interface</div>
                             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts"
@@ -76,12 +76,14 @@
                                 </nav>
                             </div>
                             <div class="sb-sidenav-menu-heading">Scripts</div>
+                             <a class="nav-link" href="{{url_for('frontend.build_db')}}"><div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>Build DB Tables</a>
+                            <a class="nav-link" href="tables.html"><div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>Run Yardi Update</a>
 
                         </div>
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Nik Burmeister
+
                     </div>
                 </nav>
             </div>

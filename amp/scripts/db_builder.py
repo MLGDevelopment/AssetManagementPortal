@@ -3,12 +3,14 @@ import datetime
 import pandas as pd
 from sqlalchemy.exc import IntegrityError
 
+from amp.routes.user.models import *
+
 
 # todo: move paths to config
 curr_dir = os.path.dirname(os.path.realpath(__file__))
-data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'data', 'external'))
-mlg_data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data', 'mlg'))
-db_data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data', 'db'))
+data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', '..', 'data', 'external'))
+mlg_data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'data', 'mlg'))
+db_data_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'data', 'db'))
 
 
 class DataBaseBuilder:
@@ -118,6 +120,19 @@ class DataBaseBuilder:
                 record.pop('property')
                 QuarterlyReportMetrics.add_record(QuarterlyReportMetrics(**record))
 
+    def build_yardi_classifications_mf(self):
+        yardi_classification_mf_path = os.path.join(db_data_dir, "yardi_codes_mf.xlsx")
+        self.yardi_codes_df = pd.read_excel(yardi_classification_mf_path)
+        self.yardi_codes_df = self.yardi_codes_df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+        records = self.yardi_codes_df.to_dict("records")
+        # try:
+        #     [YardiCodesMF.add_record(YardiCodesMF(**records[i])) for i in range(len(records))]
+        # except IntegrityError:
+        #     db.session.rollback()
+        #     db.session.flush()
+
+        self.yardi_codes_df.to_sql('yardi_codes_mf', con=db.engine, if_exists='replace', index=False)
+
     def build(self):
         if self.build_sponsor():
             print("Error")
@@ -131,11 +146,18 @@ class DataBaseBuilder:
             print("Error")
         if self.build_properties():
             print("Error")
-        #self.build_qr_table()
-        return 0
+        if self.build_yardi_classifications_mf():
+            print("Error")
 
+        #self.build_qr_table()
+
+        return 0
 
 
 def build():
     db_build = DataBaseBuilder()
     db_build.build()
+
+
+if __name__ == '__main__':
+    build()

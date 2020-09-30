@@ -231,7 +231,7 @@ class Property(db.Model, ORM):
     square_feet = db.Column(db.Numeric)
     buildings = db.Column(db.Integer)
     year_built = db.Column(db.String)
-    yardi_id = db.Column(db.String, nullable=True)
+    yardi_id = db.Column(db.String, nullable=True, unique=True)
     sponsor = db.Column(db.Integer, db.ForeignKey('sponsor.pid'))
     acquisition_date = db.Column(db.Date)
 
@@ -315,10 +315,72 @@ class QuarterlyReportMetrics(db.Model, ORM):
 #     category_pid = db.Column(db.String, primary_key=True, unique=True)
 #     category_name = db.Column(db.String, primary_key=True, unique=True)
 
+class YardiIS(db.Model, ORM):
+
+    __tablename__ = 'yardi_is'
+
+    yardi_id = db.Column(db.String,
+                         db.ForeignKey('property.yardi_id'),
+                         primary_key=True)
+
+    date = db.Column(db.Date,
+                     primary_key=True)
+
+    market_rent = db.Column(db.Numeric, nullable=False)
+    loss_to_lease = db.Column(db.Numeric, nullable=False)
+    concessions = db.Column(db.Numeric, nullable=False)
+    vacancy_loss = db.Column(db.Numeric, nullable=False)
+    total_rental_loss = db.Column(db.Numeric, nullable=False)
+    total_rubs_income = db.Column(db.Numeric, nullable=False)
+    total_other_income = db.Column(db.Numeric, nullable=False)
+    total_bad_debt = db.Column(db.Numeric, nullable=False)
+    total_marketing_expense = db.Column(db.Numeric, nullable=False)
+    total_payroll_expense = db.Column(db.Numeric, nullable=False)
+    total_general_admin_expense = db.Column(db.Numeric, nullable=False)
+    total_utility_expense = db.Column(db.Numeric, nullable=False)
+    total_service_contracts_expense = db.Column(db.Numeric, nullable=False)
+    total_exterior_grounds = db.Column(db.Numeric, nullable=False)
+    total_interior_rm_expense = db.Column(db.Numeric, nullable=False)
+    total_management_fee_expense = db.Column(db.Numeric, nullable=False)
+    total_real_estate_tax_expense = db.Column(db.Numeric, nullable=False)
+    total_insurance_expense = db.Column(db.Numeric, nullable=False)
+    total_operating_expense = db.Column(db.Numeric, nullable=False)
+    net_operating_income = db.Column(db.Numeric, nullable=False)
+    total_debt_service = db.Column(db.Numeric, nullable=False)
+    mortage_payable_1 = db.Column(db.Numeric, nullable=False)
+    mortage_payable_2 = db.Column(db.Numeric, nullable=False)
+    total_capital_expense = db.Column(db.Numeric, nullable=False)
+    total_capital_expense_exterior = db.Column(db.Numeric, nullable=False)
+    cy_distributions = db.Column(db.Numeric, nullable=False)
 
 
+class YardiBS(db.Model, ORM):
 
-# db.session.commit()
-# #db.drop_all()
-# db.create_all()
-# db.session.commit()
+    __tablename__ = 'yardi_bs'
+
+    yardi_id = db.Column(db.String,
+                         db.ForeignKey('property.yardi_id'),
+                         primary_key=True)
+
+    date = db.Column(db.Date,
+                     primary_key=True)
+
+    operating_cash = db.Column(db.Numeric, nullable=False)
+    operating_cash_2 = db.Column(db.Numeric, nullable=False)
+    cash_reserves = db.Column(db.Numeric, nullable=False)
+    cash_distributions = db.Column(db.Numeric, nullable=False)
+    total_current_liabilties = db.Column(db.Numeric, nullable=False)
+    total_long_term_liabilties = db.Column(db.Numeric, nullable=False)
+    total_current_equity = db.Column(db.Numeric, nullable=False)
+
+
+class YardiCodesMF(db.Model, ORM):
+
+    __tablename__ = 'yardi_codes_mf'
+
+    yardi_acct_code = db.Column(db.String, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    db_alias = db.Column(db.Integer, nullable=False)
+    rank = db.Column(db.Integer, nullable=False)
+    classification = db.Column(db.String, nullable=False)
+

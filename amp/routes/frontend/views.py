@@ -86,6 +86,13 @@ def dashboard():
     return render_template("dashboards/am_dashboard.html")
 
 
+@frontend.route("/build_db")
+def build_db():
+    from amp.scripts import db_builder
+    db_builder.build()
+    return redirect(url_for('frontend.dashboard'))
+
+
 @frontend.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:

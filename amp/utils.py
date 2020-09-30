@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Utils has nothing to do with models and views.
+    Utils has nothing to do with models and APSView.
 """
 
 import string

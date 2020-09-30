@@ -3,11 +3,13 @@
 import os
 import sys
 import json
+from dateutil.relativedelta import relativedelta
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, redirect, url_for
 from flask_login import login_user, current_user, logout_user
 from flask_restful import Api, Resource
 from flask_api import status
+from sqlalchemy.exc import IntegrityError
 
 from amp.routes.user import User
 from amp.routes.user.models import *
@@ -24,8 +26,8 @@ from yardi import *
 api = Blueprint('api', __name__, url_prefix='/api')
 api_wrap = Api(api)
 
-axio = AxioScraper(headless=True)
-axio.mlg_axio_login()
+# axio = AxioScraper(headless=True)
+# axio.mlg_axio_login()
 
 
 class TodoItem(Resource):
@@ -140,9 +142,47 @@ def fetch_axio_property(axio_id):
 
 @api.route('/yardi')
 def yardi():
+    """
+    Endpoint for all yardi updates:
+    - Multifamily Income Statement, Balance sheet, and unit stats
+    - Commercial Income Statement, Balance sheet, and unit stats
+    """
     properties = Property.query.filter(Property.yardi_id != 'nan')
-    start = '1/1/2019'
-    end = '8/24/2020'
-    yardi = Yardi(headless=False)
-    yardi.pull_multifamily_stats(properties, start, end)
+    yardi_codes_mf = YardiCodesMF.query.filter(YardiCodesMF.classification == "IS")
+
+    today = datetime.date.today()
+    twelve_months_prior = today - relativedelta(months=+11)
+
+    curr_year = today.year
+    curr_month = today.month
+    prior_month = twelve_months_prior.month
+    prior_year = twelve_months_prior.year
+
+    start = "{prior_month}/{prior_year}".format(prior_month=prior_month, prior_year=prior_year)
+    end = "{curr_month}/{curr_year}".format(curr_month=curr_month, curr_year=curr_year)
+
+    yardi = Yardi(headless=True)
+    yardi.valiant_yardi_login()
+    header_map = {i.yardi_acct_code: i.db_alias for i in yardi_codes_mf}
+    m_df_cols = [i for i in header_map.values()]
+    m_df_cols.append("date")
+    for property in properties:
+        print("Yardi ID: {yc}".format(yc=property.yardi_id))
+        res = yardi.T12_Month_Statement(property.yardi_id, 'Accrual', 'ysi_cf', start, end, yardi_codes_mf)
+        m_df = pd.DataFrame(columns=m_df_cols)
+        res.columns = [header_map.get(item) for item in res.columns]
+        res = res.reset_index(drop=False).rename(columns={"index": "date"})
+        res['yardi_id'] = property.yardi_id
+        m_df = m_df.merge(res, how='outer')
+        m_df = m_df.fillna(0)
+        ins_records = m_df.to_dict("records")
+
+        for record in ins_records:
+            try:
+                YardiIS.add_record(YardiIS(**record))
+            except IntegrityError:
+                db.session.rollback()
+                db.session.flush()
+    yardi.driver.quit()
+    return redirect(url_for('frontend.dashboard'))
 

@@ -51,7 +51,13 @@ def configure_app(app, config=None):
 
 def configure_extensions(app):
     # flask-sqlalchemy
+
     db.init_app(app)
+    with app.app_context():
+        db.session.commit()
+        #db.drop_all()
+        db.create_all()
+        db.session.commit()
 
     # flask-login
     login_manager.login_view = 'frontend.login'
@@ -64,7 +70,7 @@ def configure_extensions(app):
 
 
 def configure_blueprints(app):
-    """Configure blueprints in views."""
+    """Configure blueprints in APSView."""
 
     from amp.routes.user import user
     from amp.routes.frontend import frontend
@@ -88,7 +94,7 @@ def configure_logging(app):
     if app.debug or app.testing:
         # Skip debug and test mode. Just check standard output.
         return
-
+    return
     import logging
     import os
     from logging.handlers import SMTPHandler

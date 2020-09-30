@@ -1,0 +1,28 @@
+ SELECT property.pid,
+    property.report_level,
+    property.status,
+    property.name AS property_name,
+    property.alias,
+    portfolio.name AS portfolio_name,
+    property.address,
+    property.city,
+    state.abbreviation AS state,
+    property.zip,
+    property.msa,
+    asset_category.asset_category,
+    asset_class.asset_class,
+    property.units,
+    property.square_feet,
+    property.buildings,
+    property.year_built,
+    property.yardi_id,
+    sponsor.name AS sponsor,
+    property.acquisition_date,
+    property.longitude,
+    property.latitude
+   FROM property
+     JOIN state ON state.fips::text = property.state::text
+     JOIN portfolio ON portfolio.pid = property.portfolio
+     JOIN asset_class ON asset_class.pid = property.asset_class
+     JOIN asset_category ON asset_category.pid = property.asset_category
+     JOIN sponsor ON sponsor.pid = property.sponsor;
