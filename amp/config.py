@@ -32,7 +32,7 @@ class BaseConfig(object):
 
 class DefaultConfig(BaseConfig):
 
-    DEBUG = False
+    DEBUG = True
 
     SENTRY_DSN = ""
 

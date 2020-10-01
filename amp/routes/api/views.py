@@ -21,7 +21,7 @@ sys.path.append(os.path.join(packages_path, 'Scraping'))
 sys.path.append(os.path.join(packages_path, 'dbConn'))
 from axioDB import RentComp, AxioProperty, AxioPropertyOccupancy
 from axioScraper import AxioScraper
-from yardi import *
+#from yardi import *
 
 api = Blueprint('api', __name__, url_prefix='/api')
 api_wrap = Api(api)

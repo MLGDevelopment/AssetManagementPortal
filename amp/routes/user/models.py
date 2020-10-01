@@ -121,6 +121,18 @@ class ORM(object):
     def records_to_dataframe(records):
         return pd.read_sql(records.statement, records.session.bind)
 
+    @staticmethod
+    def rows2dict(rows=[]):
+        if not rows:
+            return 0
+        dicts = []
+        for row in rows:
+            d = {}
+            for column in row.__table__.columns:
+                d[column.name] = str(getattr(row, column.name))
+            dicts.append(d)
+        return dicts
+
     def convert_to_dict(record):
         """
         # TODO: COMMENT

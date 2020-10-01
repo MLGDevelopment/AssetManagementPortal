@@ -3,9 +3,14 @@
 from uuid import uuid4
 import os
 import sys
+import csv
+from flask import send_file
+
+from io import StringIO, BytesIO
+
 
 from flask import Blueprint, render_template, request, flash, \
-    url_for, redirect, session, abort
+    url_for, redirect, session, abort, Response
 from flask_login import login_required, login_user, current_user, logout_user, \
     confirm_login, login_fresh
 
@@ -21,9 +26,28 @@ from amp.config import DefaultConfig
 packages_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', '..', '..'))
 sys.path.append(os.path.join(packages_path, 'Scraping'))
 sys.path.append(os.path.join(packages_path, 'dbConn'))
-from axioDB import session, AxioProperty
+from axioDB import session, AxioProperty, RentComp, AxioPropertyOccupancy
 
 frontend = Blueprint('frontend', __name__)
+
+
+def build_csv_response(data=[]):
+    if not data:
+        return 0
+    proxy = StringIO()
+    writer = csv.writer(proxy)
+    writer.writerow([i for i in list(data[0].keys())])
+    for row in data:
+        writer.writerow([row.get(i) for i in list(data[0].keys())])
+
+    # Creating the byteIO object from the StringIO Object
+    mem = BytesIO()
+    mem.write(proxy.getvalue().encode('utf-8'))
+    # seeking was necessary. Python 3.5.2, Flask 0.12.2
+    mem.seek(0)
+    proxy.close()
+    return mem
+
 
 
 @frontend.route('/')
@@ -33,14 +57,39 @@ def index():
     return render_template('index.html')
 
 
-@frontend.route("/axioscraper")
+@frontend.route("/axioscraper", methods=['POST', 'GET'])
 def axio_scraper():
+
+    if request.method == 'POST':
+        name = ''
+        if 'download_property_data' in request.form:
+            res = AxioProperty.fetch_all_property_data()
+            res = ORM.rows2dict(res)
+            sorted(res, key=lambda k: k['property_id'])
+            mem = build_csv_response(res)
+            name = 'axio_properties.csv'
+        elif 'download_rent_data' in request.form:
+            res = RentComp.fetch_all_rent_data()
+            res = ORM.rows2dict(res)
+            mem = build_csv_response(res)
+            name = 'axio_rent_data.csv'
+        elif 'download_occupancy_data' in request.form:
+            res = AxioPropertyOccupancy.fetch_all_occ_data()
+            res = ORM.rows2dict(res)
+            mem = build_csv_response(res)
+            name = 'axio_occupancy_data.csv'
+
+        return send_file(mem,
+                         mimetype='text/csv',
+                         attachment_filename=name,
+                         as_attachment=True, cache_timeout=0)
+
     c_properties = session.query(AxioProperty).count()
     all_p_data = AxioProperty.fetch_all_property_data()
     all_p_data = [i.__dict__ for i in all_p_data]
     msa_c = Counter([i["msa"] for i in all_p_data]).most_common()
     msa_headers = ["MSA", "Count"]
-    return render_template("dashboards/axioscraper.html", p_count=c_properties, msa_overview=msa_c, msa_headers=msa_headers)
+    return render_template("dashboards/axio_overview.html", p_count=c_properties, msa_overview=msa_c, msa_headers=msa_headers)
 
 
 @frontend.route("/yardi_scraper")

@@ -1,10 +1,18 @@
 {% extends "layouts/base.html" %}
-
 {% block content %}
 
-<h1 class="mt-4">AxioScraper Overview</h1>
+<h1 class="mt-4">Rent Comp Data Overview</h1>
 <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active"><button type="button" class="btn btn-success">Run AxioScaper</button></li>
+   <!-- <li class="breadcrumb-item active"><button type="button" class="btn btn-success">Run AxioScaper</button></li>-->
+    <form method="post">
+        <li class="breadcrumb-item active" style="padding-left: 15px;"><input class="btn btn-success" type="submit" name="download_property_data" value="download property data"></li>
+    </form>
+    <form method="post">
+        <li class="breadcrumb-item active" style="margin-left: 15px;"><input class="btn btn-success" type="submit" name="download_rent_data" value="download rent data"></li>
+    </form>
+    <form method="post">
+        <li class="breadcrumb-item active" style="margin-left: 15px;"><input class="btn btn-success" type="submit" name="download_occupancy_data" value="download occupancy data"></li>
+    </form>
 </ol>
 
 <div class="row">
@@ -21,7 +29,7 @@
 </div>
 
 <div class="card mb-4">
-    <div class="card-header"><i class="fas fa-table mr-1"></i>AxioStatics Breakdown</div>
+    <div class="card-header"><i class="fas fa-table mr-1"></i>Rent Comps Breakdown</div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="max-width:100%; white-space:nowrap;">
