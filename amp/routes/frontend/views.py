@@ -49,7 +49,6 @@ def build_csv_response(data=[]):
     return mem
 
 
-
 @frontend.route('/')
 def index():
     if current_user.is_authenticated:

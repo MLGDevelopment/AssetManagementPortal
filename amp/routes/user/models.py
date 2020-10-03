@@ -233,50 +233,38 @@ class Property(db.Model, ORM):
     city = db.Column(db.String)
     state = db.Column(db.String, db.ForeignKey('state.fips'))
     zip = db.Column(db.String)
-    # TODO: Foreign Key
     msa = db.Column(db.String)
     asset_category = db.Column(db.Integer, db.ForeignKey('asset_category.pid'))
     asset_class = db.Column(db.Integer, db.ForeignKey('asset_class.pid'))
-
     units = db.Column(db.Integer)
-    # # TODO: MAKE REQUIRED
     square_feet = db.Column(db.Numeric)
     buildings = db.Column(db.Integer)
     year_built = db.Column(db.String)
     yardi_id = db.Column(db.String, nullable=True, unique=True)
     sponsor = db.Column(db.Integer, db.ForeignKey('sponsor.pid'))
     acquisition_date = db.Column(db.Date)
-
-    # TODO: LONGITUDE AND LATITUDE
     longitude = db.Column(db.Numeric, nullable=True)
     latitude = db.Column(db.Numeric, nullable=True)
-
     qrm = db.relationship("QuarterlyReportMetrics", cascade="all,delete")
-
-    # off_market = db.Column(db.String)
-    # purchase_price = db.Column(db.Integer)
-    # price_per_unit = db.Column(db.Numeric)
-    # price_per_sf = db.Column(db.Numeric)
-    # fund_I_equity = db.Column(db.Numeric)
-    # fund_II_equity = db.Column(db.Numeric)
-    # fund_III_equity = db.Column(db.Numeric)
-    # fund_IV_equity = db.Column(db.Numeric)
-    # fund_V_equity = db.Column(db.Numeric)
-    # legacy_fund_equity = db.Column(db.Numeric)
-    # co_investor_equity = db.Column(db.Numeric)
-    # sponsor_equity = db.Column(db.Numeric)
-    # total_equity = db.Column(db.Numeric)
-    # original_debt = db.Column(db.Numeric)
-    # current_debt = db.Column(db.Numeric)
-    # lender = db.Column(db.String)
+    purchase_price = db.Column(db.Numeric)
+    price_per_unit = db.Column(db.Numeric)
+    price_per_sf = db.Column(db.Numeric)
+    fund_I_equity = db.Column(db.Numeric)
+    fund_II_equity = db.Column(db.Numeric)
+    fund_III_equity = db.Column(db.Numeric)
+    fund_IV_equity = db.Column(db.Numeric)
+    fund_V_equity = db.Column(db.Numeric)
+    legacy_fund_equity = db.Column(db.Numeric)
+    co_investor_equity = db.Column(db.Numeric)
+    sponsor_equity = db.Column(db.Numeric)
+    total_equity = db.Column(db.Numeric)
+    original_debt = db.Column(db.Numeric)
+    current_debt = db.Column(db.Numeric)
+    lender = db.Column(db.String)
     # interest_rate = db.Column(db.String)
     # spread = db.Column(db.String)
     # io_end = db.Column(db.Date)
     # maturity = db.Column(db.Date)
-    # fund_I_B = db.Column(db.Integer, default=False)
-    # fund_II_B = db.Column(db.Integer, default=False)
-    # fund_III_B = db.Column(db.Integer, default=False)
-    # fund_IV_B = db.Column(db.Integer, default=False)
 
     @staticmethod
     def get_property_by_name(property_name):
@@ -295,7 +283,7 @@ class Property(db.Model, ORM):
 
 class QuarterlyReportMetrics(db.Model, ORM):
 
-    __tablename__ = "quarterlyreportmetrics"
+    __tablename__ = "quarterly_property_metrics"
 
     property_id = db.Column(
         db.Integer,
@@ -309,10 +297,12 @@ class QuarterlyReportMetrics(db.Model, ORM):
     )
 
     occupancy = db.Column(db.Numeric, nullable=True)
-    quarterly_distribution_per = db.Column(db.Numeric, nullable=True)
+    outstanding_capital = db.Column(db.Numeric, nullable=True)
+    quarterly_distribution_rate = db.Column(db.Numeric, nullable=True)
     quarterly_distribution_abs = db.Column(db.Numeric, nullable=True)
-    ytd_distribution_per = db.Column(db.Numeric, nullable=True)
+    ytd_distribution_rate = db.Column(db.Numeric, nullable=True)
     ytd_distribution_abs = db.Column(db.Numeric, nullable=True)
+    fair_market_value = db.Column(db.Numeric, nullable=True)
 
 
 # class FinancialStatementMappings(db.Model, ORM):
