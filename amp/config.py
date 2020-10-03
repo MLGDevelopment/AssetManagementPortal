@@ -27,7 +27,10 @@ class BaseConfig(object):
     # Limited the maximum allowed payload to 16 megabytes.
     # http://flask.pocoo.org/docs/patterns/fileuploads/#improving-uploads
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
-    UPLOAD_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'uploads')
+
+    DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    UPLOAD_FOLDER = os.path.join(DATA_PATH, 'data', 'uploads')
+    make_dir(UPLOAD_FOLDER)
 
 
 class DefaultConfig(BaseConfig):

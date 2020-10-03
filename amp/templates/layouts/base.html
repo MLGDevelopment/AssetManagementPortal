@@ -42,9 +42,9 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">Core</div>
-                            <a class="nav-link" href="{{url_for('frontend.properties_view')}}"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>All Properties</a>
-                            <a class="nav-link" href="{{url_for('frontend.axio_scraper')}}"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>MSA Data</a>
-                            <a class="nav-link" href="{{url_for('frontend.yardi_scraper')}}"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>YardiScraper</a>
+                            <a class="nav-link" href="{{url_for('frontend.properties_view')}}"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>MLG Properties Overview</a>
+                            <a class="nav-link" href="{{url_for('frontend.axio_scraper')}}"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>Properties Tracker</a>
+                            <a class="nav-link" href="{{url_for('frontend.yardi_scraper')}}"><div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>MLG Property Metrics</a>
                             <div class="sb-sidenav-menu-heading">Portals</div>
                             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts"
                                 ><div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -52,7 +52,7 @@
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div
                             ></a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav"><a class="nav-link" href="layout-sidenav-light.html">Quarterly Reports</a></nav>
+                                <nav class="sb-sidenav-menu-nested nav"><a class="nav-link" href="{{url_for('portal.quarterly_report_portal')}}">Quarterly Reports</a></nav>
                             </div>
                             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages"
                                 ><div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
