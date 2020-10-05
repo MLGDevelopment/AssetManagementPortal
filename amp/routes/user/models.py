@@ -280,6 +280,15 @@ class Property(db.Model, ORM):
         res = Property.query.all()
         return res
 
+    @staticmethod
+    def get_all_property_names():
+        res = db.session.query(Property.name).all()
+        return res
+
+    @staticmethod
+    def get_report_level_properties():
+        res = db.session.query(Property.name).filter(Property.report_level == 1).all()
+        return res
 
 class QuarterlyReportMetrics(db.Model, ORM):
 

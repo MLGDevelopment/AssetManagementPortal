@@ -8,15 +8,16 @@
 <div class="col-xl-3 col-md-6">
    <div class="row">
     <form action="" method="post" name="Inputs">
-    {{form.hidden_tag()}}
-    <p>
-        {{form.myField()}}
-    </p>
+
     </form>
 </div>
 
-<div class="row">
+<div class="ol-xl-3 col-md-6">
     <form action = "{{ url_for('portal.upload_file') }}" method="POST" enctype="multipart/form-data">
+        {{form.hidden_tag()}}
+        <p>
+            {{form.myField()}}
+         </p>
          <label class="btn btn-secondary" for="my-file-selector">
               <input name="file" id="my-file-selector" type="file" style="display:none"
               onchange="$('#upload-file-info').html(this.files[0].name)">
@@ -31,10 +32,7 @@
          <span class='label label-info' id="upload-file-info"></span>
     </form>
 </div>
-
-
-
 </div>
-
+{}
 
 {% endblock %}
