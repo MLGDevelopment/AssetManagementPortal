@@ -42,10 +42,10 @@ def build_csv_response(data=[]):
 
     # Creating the byteIO object from the StringIO Object
     mem = BytesIO()
-    mem.write(proxy.getvalue().encode('utf-8'))
-    # seeking was necessary. Python 3.5.2, Flask 0.12.2
-    mem.seek(0)
-    proxy.close()
+    # mem.write(proxy.getvalue().encode('utf-8'))
+    # # seeking was necessary. Python 3.5.2, Flask 0.12.2
+    # mem.seek(0)
+    # proxy.close()
     return mem
 
 
