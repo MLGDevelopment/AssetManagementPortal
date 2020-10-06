@@ -49,6 +49,11 @@ def upload_file():
                     if 'invalid_properties' in res.keys():
                         return redirect(url_for('portal.quarterly_report_portal', errors=res))
 
+                if isinstance(res, pd.DataFrame):
+                    recs = res.to_dict('records')
+                    db_records = [QuarterlyReportMetrics(**rec) for rec in recs]
+                    [QuarterlyReportMetrics.add_record(i) for i in db_records]
+                    db.session.commit()
                 # todo check for valid filename
 
 
@@ -79,9 +84,7 @@ def check_report_file(report_id, file_name, file_path, file):
             invalid_properties = [i for i in df['property_name'].values.tolist() if i not in property_names]
             if invalid_properties:
                 return {'invalid_properties': invalid_properties}
-            # next check that all active properties are here
-
-            #
+            return df
             print
 
 

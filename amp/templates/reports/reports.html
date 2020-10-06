@@ -1,0 +1,39 @@
+{% extends "layouts/base.html" %}
+
+
+{% block content %}
+<h1 class="mt-4"></h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active"></li>
+</ol>
+<div class="card mb-4">
+    <div class="card-header"><i class="fas fa-table mr-1"></i>Rent Comps Breakdown</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="max-width:100%; white-space:nowrap;">
+                <thead>
+                        {% for heading in header_names %}
+                        <tr>
+                            <th>{{ heading }}</th>
+                        </tr>
+                        {% endfor %}
+                </thead>
+                <tfoot>
+                    <tr>
+                        {% for col in header_names %}
+                            <th>{{col}}</th>
+                        {% endfor %}
+
+                    </tr>
+                </tfoot>
+                    <tbody>
+                        {% for i in data %}
+                            <tr><td>{{ i }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -76,8 +76,9 @@ def configure_blueprints(app):
     from amp.routes.frontend import frontend
     from amp.routes.api import api
     from amp.routes.portals import portal
+    from amp.routes.reports import reports
 
-    for bp in [user, frontend, api, portal]:
+    for bp in [user, frontend, api, portal, reports]:
         app.register_blueprint(bp)
 
 

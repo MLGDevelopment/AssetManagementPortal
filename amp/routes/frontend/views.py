@@ -45,7 +45,7 @@ def build_csv_response(data=[]):
     # mem.write(proxy.getvalue().encode('utf-8'))
     # # seeking was necessary. Python 3.5.2, Flask 0.12.2
     # mem.seek(0)
-    # proxy.close()
+    proxy.close()
     return mem
 
 

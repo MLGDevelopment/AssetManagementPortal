@@ -33,6 +33,15 @@
     </form>
 </div>
 </div>
-{}
-
+<row>
+    {% if errors is not none %}
+        <div> Please see list of property names here: <a href="{{ url_for('reports.properties_report_list') }}"> Report Property List</a></div>
+        <div><h4>The portal did not recognize the following property names: </h4></div>
+        <ul>
+            {% for error in errors['invalid_properties'] %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</row>
 {% endblock %}

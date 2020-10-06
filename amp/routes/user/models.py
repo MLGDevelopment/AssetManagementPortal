@@ -226,7 +226,7 @@ class Property(db.Model, ORM):
     pid = db.Column(db.Integer, primary_key=True)
     report_level = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String, nullable=False)
-    name = db.Column(db.String, unique=True)
+    property_name = db.Column(db.String, unique=True)
     alias = db.Column(db.String, nullable=True)
     portfolio = db.Column(db.Integer, db.ForeignKey('portfolio.pid'))
     address = db.Column(db.String)
@@ -268,7 +268,7 @@ class Property(db.Model, ORM):
 
     @staticmethod
     def get_property_by_name(property_name):
-        res = Property.query.filter(Property.name.like(property_name)).all()
+        res = Property.query.filter(Property.property_name.like(property_name)).all()
         if len(res) == 1:
             return res[0]
         else:
@@ -282,13 +282,14 @@ class Property(db.Model, ORM):
 
     @staticmethod
     def get_all_property_names():
-        res = db.session.query(Property.name).all()
+        res = db.session.query(Property.property_name).all()
         return res
 
     @staticmethod
     def get_report_level_properties():
-        res = db.session.query(Property.name).filter(Property.report_level == 1).all()
+        res = db.session.query(Property.property_name).filter(Property.report_level == 1).all()
         return res
+
 
 class QuarterlyReportMetrics(db.Model, ORM):
 
