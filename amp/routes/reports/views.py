@@ -13,6 +13,6 @@ reports = Blueprint('reports', __name__, url_prefix='/reports')
 @reports.route("/properties_report_list")
 def properties_report_list():
     headers = ["Report Level Property List"]
-    res = [i.name for i in Property.get_report_level_properties()]
+    res = [i.property_name for i in Property.get_report_level_properties()]
     res.sort()
     return render_template('reports/reports.html', data=res, header_names=headers)

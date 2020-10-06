@@ -80,7 +80,7 @@ def check_report_file(report_id, file_name, file_path, file):
             df = pd.read_excel(file_path)
             # first check columns
             property_names = Property.get_report_level_properties()
-            property_names = [i.name for i in property_names]
+            property_names = [i.property_name for i in property_names]
             invalid_properties = [i for i in df['property_name'].values.tolist() if i not in property_names]
             if invalid_properties:
                 return {'invalid_properties': invalid_properties}
