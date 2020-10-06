@@ -254,8 +254,11 @@ class Property(db.Model, ORM):
     fund_III_equity = db.Column(db.Numeric)
     fund_IV_equity = db.Column(db.Numeric)
     fund_V_equity = db.Column(db.Numeric)
+
     legacy_fund_equity = db.Column(db.Numeric)
     co_investor_equity = db.Column(db.Numeric)
+    mlg_historical_equity = db.Column(db.Numeric)
+    managed_account_equity = db.Column(db.Numeric)
     sponsor_equity = db.Column(db.Numeric)
     total_equity = db.Column(db.Numeric)
     original_debt = db.Column(db.Numeric)
