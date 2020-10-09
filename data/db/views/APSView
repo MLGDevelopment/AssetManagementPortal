@@ -1,8 +1,7 @@
  SELECT property.pid,
     property.report_level,
     property.status,
-    property.name AS property_name,
-    property.alias,
+    property.property_name,
     portfolio.name AS portfolio_name,
     property.address,
     property.city,
@@ -18,11 +17,14 @@
     property.yardi_id,
     sponsor.name AS sponsor,
     property.acquisition_date,
-    property.longitude,
-    property.latitude
+    property.purchase_price,
+    property.price_per_unit,
+    property.price_per_sf,
+    property.total_equity
    FROM property
      JOIN state ON state.fips::text = property.state::text
      JOIN portfolio ON portfolio.pid = property.portfolio
      JOIN asset_class ON asset_class.pid = property.asset_class
      JOIN asset_category ON asset_category.pid = property.asset_category
-     JOIN sponsor ON sponsor.pid = property.sponsor;
+     JOIN sponsor ON sponsor.pid = property.sponsor
+  WHERE property.report_level = 1;

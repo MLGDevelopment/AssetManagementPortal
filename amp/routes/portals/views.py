@@ -48,16 +48,11 @@ def upload_file():
                 if isinstance(res, dict):
                     if 'invalid_properties' in res.keys():
                         return redirect(url_for('portal.quarterly_report_portal', errors=res))
-
                 if isinstance(res, pd.DataFrame):
                     recs = res.to_dict('records')
                     db_records = [QuarterlyReportMetrics(**rec) for rec in recs]
                     [QuarterlyReportMetrics.add_record(i) for i in db_records]
                     db.session.commit()
-                # todo check for valid filename
-
-
-                # data = read_uploaded_file(file_path)
                 flash('file uploaded successfully', 'success')
         except HTTPException:
             flash('Failed Upload. Are you sure you selected the correct file?', 'warning')
@@ -66,7 +61,7 @@ def upload_file():
 
 
 def check_report_file(report_id, file_name, file_path, file):
-
+    # todo: check on filename, headers, property names, etc
     if report_id == '1':
         quarter, report = file_name.split('-')
         quarter = quarter.replace("_", "")
@@ -79,13 +74,16 @@ def check_report_file(report_id, file_name, file_path, file):
             file.save(file_path)
             df = pd.read_excel(file_path)
             # first check columns
-            property_names = Property.get_report_level_properties()
-            property_names = [i.property_name for i in property_names]
-            invalid_properties = [i for i in df['property_name'].values.tolist() if i not in property_names]
+            properties = Property.get_report_level_properties()
+            property_names_list = [i.property_name for i in properties]
+            invalid_properties = [i for i in df['property_name'].values.tolist() if i not in property_names_list]
             if invalid_properties:
                 return {'invalid_properties': invalid_properties}
+            property_name_pid_map = {i.property_name: i.pid for i in properties}
+            df["pid"] = df['property_name'].map(property_name_pid_map)
+            del df['property_name']
             return df
-            print
+
 
 
 def get_quarter(date):

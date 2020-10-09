@@ -290,7 +290,7 @@ class Property(db.Model, ORM):
 
     @staticmethod
     def get_report_level_properties():
-        res = db.session.query(Property.property_name).filter(Property.report_level == 1).all()
+        res = db.session.query(Property.pid, Property.property_name).filter(Property.report_level == 1).all()
         return res
 
 
