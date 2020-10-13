@@ -91,7 +91,7 @@
                 <main>
                     <div class="container-fluid">
                         {% for category, message in get_flashed_messages(with_categories=True) %}
-                          <div class="alert-{{category}}">Error: {{ message }}</div>
+                          <div class="alert-{{category}}">{{ message }}</div>
                         {% endfor %}
                         {% block content %}
                         {% endblock %}

@@ -4,7 +4,7 @@ import os
 import json
 import ast
 from amp.config import BaseConfig
-
+from sqlalchemy.sql import null
 from flask import Blueprint, render_template, send_from_directory, request, \
     current_app, flash, redirect, url_for
 from flask_login import login_user, current_user, logout_user
@@ -50,11 +50,15 @@ def upload_file():
                 res = report_handler(selected_report, filename, file_path, file)
                 if isinstance(res, dict):
                     return redirect(url_for('portal.quarterly_report_portal', errors=res))
-            return
+                if res == 1:
+                    flash('upload successful', 'success')
+                    return redirect(url_for('portal.quarterly_report_portal'))
+            else:
+                return render_template('portal.quarterly_report_portal')
         except HTTPException:
-            flash('Failed Upload. Are you sure you selected the correct file?', 'warning')
-            return redirect('portal.quarterly_report_portal')
-    return redirect('portal.quarterly_report_portal')
+            #todo: catch
+            render_template('portal.quarterly_report_portal')
+    return render_template('portal.quarterly_report_portal')
 
 
 def report_handler(report_id, file_name, file_path, file):
@@ -65,7 +69,7 @@ def report_handler(report_id, file_name, file_path, file):
         report = report.replace("_", " ").split(".")[0].strip().lower()
         # first check quarter
         today = datetime.date.today()
-        ldq = get_last_day_of_the_quarter(today)
+        ldq = get_last_day_of_the_quarter(today).date()
 
         if report == 'distribution and valuations summary':
             file.save(file_path)
@@ -76,18 +80,25 @@ def report_handler(report_id, file_name, file_path, file):
             if invalid_properties:
                 return {'invalid_properties': invalid_properties}
             property_name_pid_map = {i.property_name: i.pid for i in properties}
-            df["pid"] = df['property_name'].map(property_name_pid_map)
+            df["property_id"] = df['property_name'].map(property_name_pid_map)
             del df['property_name']
+            df['date'] = ldq
+            df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+            df = df.where(pd.notnull(df), null())
             recs = df.to_dict('records')
             db_records = [QuarterlyReportMetrics(**rec) for rec in recs]
-            [QuarterlyReportMetrics.add_record(i) for i in db_records]
-            db.session.commit()
+            for rec in db_records:
+                try:
+                    db.session.add(rec)
+                    db.session.commit()
+                except:
+                    db.session.rollback()
+                    db.session.flush()
             return 1
         elif report == "":
             pass
     elif report_id == 'None':
         return {'no_report': None}
-
 
 
 def get_quarter(date):
