@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from uuid import uuid4
-import os
 import sys
 import csv
 from flask import send_file
-
 from io import StringIO, BytesIO
-
-
 from flask import Blueprint, render_template, request, flash, \
     url_for, redirect, session, abort, Response
 from flask_login import login_required, login_user, current_user, logout_user, \
@@ -20,8 +16,6 @@ from .forms import SignupForm, LoginForm, RecoverPasswordForm, ReauthForm, \
     ChangePasswordForm
 
 from collections import Counter
-
-from amp.config import DefaultConfig
 
 packages_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', '..', '..'))
 sys.path.append(os.path.join(packages_path, 'Scraping'))

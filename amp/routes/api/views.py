@@ -27,8 +27,8 @@ api = Blueprint('api', __name__, url_prefix='/api')
 api_wrap = Api(api)
 
 # TODO: UNCOMMENT FOR PROD
-# axio = AxioScraper(headless=True)
-# axio.mlg_axio_login()
+axio = AxioScraper(headless=True)
+axio.mlg_axio_login()
 
 
 class TodoItem(Resource):
