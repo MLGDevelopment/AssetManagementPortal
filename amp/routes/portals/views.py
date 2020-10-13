@@ -14,7 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 from werkzeug.utils import secure_filename
 from .forms import SelectAssetManagementReport
-
+from werkzeug.wrappers import Response
 from amp.routes.user.models import *
 
 import pandas as pd
@@ -30,6 +30,9 @@ def quarterly_report_portal(errors=None):
     reports = SelectAssetManagementReport()
     if errors is not None:
         errors = ast.literal_eval(errors)
+        if 'no_report' in errors.keys():
+            flash('please select report type', 'warning')
+            return render_template('portals/quarterly_reports.html', form=reports, errors=None)
         return render_template('portals/quarterly_reports.html', form=reports, errors=errors)
 
     return render_template('portals/quarterly_reports.html', form=reports, errors=errors)
@@ -44,28 +47,22 @@ def upload_file():
                 filename = secure_filename(file.filename)
                 selected_report = request.form['myField']
                 file_path = os.path.join(BaseConfig.UPLOAD_FOLDER, filename)
-                res = check_report_file(selected_report, filename, file_path, file)
+                res = report_handler(selected_report, filename, file_path, file)
                 if isinstance(res, dict):
-                    if 'invalid_properties' in res.keys():
-                        return redirect(url_for('portal.quarterly_report_portal', errors=res))
-                if isinstance(res, pd.DataFrame):
-                    recs = res.to_dict('records')
-                    db_records = [QuarterlyReportMetrics(**rec) for rec in recs]
-                    [QuarterlyReportMetrics.add_record(i) for i in db_records]
-                    db.session.commit()
-                flash('file uploaded successfully', 'success')
+                    return redirect(url_for('portal.quarterly_report_portal', errors=res))
+            return
         except HTTPException:
             flash('Failed Upload. Are you sure you selected the correct file?', 'warning')
-            redirect('portal.quarterly_report_portal')
+            return redirect('portal.quarterly_report_portal')
     return redirect('portal.quarterly_report_portal')
 
 
-def check_report_file(report_id, file_name, file_path, file):
+def report_handler(report_id, file_name, file_path, file):
     # todo: check on filename, headers, property names, etc
     if report_id == '1':
         quarter, report = file_name.split('-')
         quarter = quarter.replace("_", "")
-        report = report.replace("_", " ").split(".")[0].strip()
+        report = report.replace("_", " ").split(".")[0].strip().lower()
         # first check quarter
         today = datetime.date.today()
         ldq = get_last_day_of_the_quarter(today)
@@ -73,7 +70,6 @@ def check_report_file(report_id, file_name, file_path, file):
         if report == 'distribution and valuations summary':
             file.save(file_path)
             df = pd.read_excel(file_path)
-            # first check columns
             properties = Property.get_report_level_properties()
             property_names_list = [i.property_name for i in properties]
             invalid_properties = [i for i in df['property_name'].values.tolist() if i not in property_names_list]
@@ -82,7 +78,15 @@ def check_report_file(report_id, file_name, file_path, file):
             property_name_pid_map = {i.property_name: i.pid for i in properties}
             df["pid"] = df['property_name'].map(property_name_pid_map)
             del df['property_name']
-            return df
+            recs = df.to_dict('records')
+            db_records = [QuarterlyReportMetrics(**rec) for rec in recs]
+            [QuarterlyReportMetrics.add_record(i) for i in db_records]
+            db.session.commit()
+            return 1
+        elif report == "":
+            pass
+    elif report_id == 'None':
+        return {'no_report': None}
 
 
 

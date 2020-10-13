@@ -133,6 +133,13 @@ class DataBaseBuilder:
 
         self.yardi_codes_df.to_sql('yardi_codes_mf', con=db.engine, if_exists='replace', index=False)
 
+    def create_QR_view(self):
+        """
+
+        """
+        # todo: create view on creation
+
+
     def build(self):
         if self.build_sponsor():
             print("Error")
