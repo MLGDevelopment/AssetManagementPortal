@@ -27,8 +27,8 @@ api = Blueprint('api', __name__, url_prefix='/api')
 api_wrap = Api(api)
 
 # TODO: UNCOMMENT FOR PROD
-axio = AxioScraper(headless=True)
-axio.mlg_axio_login()
+# axio = AxioScraper(headless=True)
+# axio.mlg_axio_login()
 
 
 class TodoItem(Resource):
@@ -79,8 +79,8 @@ def fetch_axio_property(axio_id):
         axio.property_occupancy = AxioPropertyOccupancy.get_occupancy_as_of_date(axio_id, today)
     else:
         # property not cached, must pull it into db
-        res = axio.navigate_to_property_report(axio_id)
-        if res != 0:
+        res = axio.get_property_report(axio_id)
+        if res:
             axio.get_property_details(axio_id)
             axio.get_property_data(axio_id)
         else:

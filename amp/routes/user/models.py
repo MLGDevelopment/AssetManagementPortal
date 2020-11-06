@@ -231,7 +231,7 @@ class Property(db.Model, ORM):
     portfolio = db.Column(db.Integer, db.ForeignKey('portfolio.pid'))
     address = db.Column(db.String)
     city = db.Column(db.String)
-    state = db.Column(db.String, db.ForeignKey('state.fips'))
+    state = db.Column(db.String, db.ForeignKey('state.fips'), nullable=True)
     zip = db.Column(db.String)
     msa = db.Column(db.String)
     asset_category = db.Column(db.Integer, db.ForeignKey('asset_category.pid'))

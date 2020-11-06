@@ -63,14 +63,15 @@ def upload_file():
 
 def report_handler(report_id, file_name, file_path, file):
     # todo: check on filename, headers, property names, etc
+    if report_id == 'None':
+        return {'no_report': None}
+    quarter, report = file_name.split('-')
+    quarter = quarter.replace("_", "")
+    report = report.replace("_", " ").split(".")[0].strip().lower()
+    # first check quarter
+    today = datetime.date.today()
+    ldq = get_last_day_of_the_quarter(today).date()
     if report_id == '1':
-        quarter, report = file_name.split('-')
-        quarter = quarter.replace("_", "")
-        report = report.replace("_", " ").split(".")[0].strip().lower()
-        # first check quarter
-        today = datetime.date.today()
-        ldq = get_last_day_of_the_quarter(today).date()
-
         if report == 'distribution and valuations summary':
             file.save(file_path)
             df = pd.read_excel(file_path)
@@ -97,8 +98,14 @@ def report_handler(report_id, file_name, file_path, file):
             return 1
         elif report == "":
             pass
-    elif report_id == 'None':
-        return {'no_report': None}
+
+    elif report_id == '2':
+        # valuations report
+        pass
+    elif report_id == '3':
+        # occupancy report
+        pass
+
 
 
 def get_quarter(date):

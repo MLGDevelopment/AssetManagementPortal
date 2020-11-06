@@ -13,7 +13,8 @@ from amp.constants import USERNAME_LEN_MIN, USERNAME_LEN_MAX, USERNAME_TIP, \
 
 class SelectAssetManagementReport(Form):
     reports = [(None, ''),
-               (1, 'QR - Property & Portfolio Distributions'),
-               (2, 'QR - Property & Portfolio Valuations'),
+               (1, 'Quarterly - Distributions'),
+               (2, 'Quarterly - Occupancies'),
+               (3, 'Quarterly - Valuations'),
                ]
     myField = SelectField(u'Field name', choices=reports, validators=[DataRequired()], default=None)
