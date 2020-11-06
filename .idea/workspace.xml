@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="503a9348-55b5-48ed-b4d5-4be3315f993a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/amp/routes/api/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/amp/routes/api/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/amp/routes/portals/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/amp/routes/portals/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/amp/routes/portals/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/amp/routes/portals/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/amp/routes/user/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/amp/routes/user/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/db/properties.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/db/properties.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/db/states.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/db/states.xlsx" afterDir="false" />
-    </list>
+    <list default="true" id="503a9348-55b5-48ed-b4d5-4be3315f993a" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

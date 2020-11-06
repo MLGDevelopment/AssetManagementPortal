@@ -21,14 +21,14 @@ sys.path.append(os.path.join(packages_path, 'Scraping'))
 sys.path.append(os.path.join(packages_path, 'dbConn'))
 from axioDB import RentComp, AxioProperty, AxioPropertyOccupancy
 from axioScraper import AxioScraper
-#from yardi import *
+# from yardi import *
 
 api = Blueprint('api', __name__, url_prefix='/api')
 api_wrap = Api(api)
 
 # TODO: UNCOMMENT FOR PROD
-# axio = AxioScraper(headless=True)
-# axio.mlg_axio_login()
+axio = AxioScraper(headless=True)
+axio.mlg_axio_login()
 
 
 class TodoItem(Resource):
