@@ -153,9 +153,6 @@ def fetch_market_view(radius, address, city, state, zip):
     return json_res
 
 
-
-
-
 @api.route("/fetch_axio_property/<axio_id>")
 def fetch_axio_property(axio_id):
     """
@@ -239,6 +236,7 @@ def yardi_start_end(prior_month, prior_year, curr_month, curr_year):
     start = "{prior_month}/{prior_year}".format(prior_month=prior_month, prior_year=prior_year)
     end = "{curr_month}/{curr_year}".format(curr_month=curr_month, curr_year=curr_year)
     return start, end
+
 
 @api.route('/yardi')
 def yardi():
