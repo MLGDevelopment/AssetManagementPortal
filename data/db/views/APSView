@@ -27,4 +27,4 @@
      JOIN asset_class ON asset_class.pid = property.asset_class
      JOIN asset_category ON asset_category.pid = property.asset_category
      JOIN sponsor ON sponsor.pid = property.sponsor
-  WHERE property.report_level = 1;
+  WHERE property.report_level = 1 AND property.status='ACTIVE';

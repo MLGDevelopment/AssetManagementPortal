@@ -238,6 +238,176 @@ def yardi_start_end(prior_month, prior_year, curr_month, curr_year):
     return start, end
 
 
+@api.route("/all_asset_data_view/")
+def fetch_all_asset_data_view():
+    properties = Property.query.all()
+    master = []
+    for i in range(len(properties)):
+        ret_json = {}
+
+        try:
+            ret_json["Portfolio"] = properties[i].property_portfolio.name
+        except:
+            ret_json["Portfolio"] = ""
+
+        try:
+            ret_json["Name"] = properties[i].property_name
+        except:
+            ret_json["Name"] = ""
+
+        try:
+            ret_json["Alias"] = properties[i].alias
+        except:
+            ret_json["Alias"] = ""
+
+        try:
+            ret_json["Address"] = properties[i].address
+        except:
+            ret_json["Address"] = ""
+
+        try:
+            ret_json["City"] = properties[i].city
+        except:
+            ret_json["City"] = ""
+
+        try:
+            ret_json["State"] = properties[i].property_state.name
+        except:
+            ret_json["State"] = ""
+
+        try:
+            ret_json["Zip"] = properties[i].zip
+        except:
+            ret_json["Zip"] = ""
+
+        try:
+            ret_json["MSA"] = properties[i].msa
+        except:
+            ret_json["MSA"] = ""
+
+        try:
+            ret_json["Asset Category"] = properties[i].property_asset_category.asset_category
+        except:
+            ret_json["Asset Category"] = ""
+
+        try:
+            ret_json["Asset Class"] = properties[i].property_asset_class.asset_class # need to catch error
+        except:
+            ret_json["Asset Class"] = ""
+
+        try:
+            ret_json["units"] = int(properties[i].units)  # need to catch error
+        except:
+            ret_json["units"] = ""
+
+        try:
+            ret_json["square feet"] = float(properties[i].square_feet)  # need to catch error
+        except:
+            ret_json["square feet"] = ""
+
+        try:
+            ret_json["Purchase Price"] = float(properties[i].purchase_price)
+        except:
+            ret_json["Purchase Price"] = ""
+
+        try:
+            ret_json["Price Per Unit"] = float(properties[0].price_per_unit)
+        except:
+            ret_json["Price Per Unit"] = ""
+
+        try:
+            ret_json["Price Per SF"] = float(properties[0].price_per_sf)
+        except:
+            ret_json["Price Per SF"] = ""
+
+        try:
+            ret_json["Acquisition_Date"] = str(properties[0].acquisition_date)
+        except:
+            ret_json["Acquisition_Date"] = ""
+
+
+        try:
+            ret_json["sponsor"] = str(properties[0].sponsor)
+        except:
+            ret_json["sponsor"] = ""
+
+        try:
+            ret_json["latitude"] = float(properties[i].latitude)
+        except:
+            ret_json["latitude"] = ""
+
+        try:
+            ret_json["longitude"] = float(properties[i].longitude)
+        except:
+            ret_json["longitude"] = ""
+
+        try:
+            ret_json["Fund_I_equity"] = float(properties[i].fund_I_equity)
+        except:
+            ret_json["Fund_I_equity"] = ""
+
+        try:
+            ret_json["Fund_II_equity"] = float(properties[i].fund_II_equity)
+        except:
+            ret_json["Fund_II_equity"] = ""
+
+        try:
+            ret_json["Fund_III_equity"] = float(properties[i].fund_III_equity)
+        except:
+            ret_json["Fund_III_equity"] = ""
+
+
+        try:
+            ret_json["Fund_IV_equity"] = float(properties[i].fund_IV_equity)
+        except:
+            ret_json["Fund_IV_equity"] = ""
+
+        try:
+            ret_json["Fund_V_equity"] = float(properties[i].fund_V_equity)
+        except:
+            ret_json["Fund_V_equity"] = ""
+
+        try:
+            ret_json["sponsor equity"] = float(properties[i].sponsor_equity)
+        except:
+            ret_json["sponsor equity"] = ""
+
+        try:
+            ret_json["Co-investor equity"] = float(properties[i].co_investor_equity)
+        except:
+            ret_json["Co-investor equity"] = ""
+
+        try:
+            ret_json["legacy fund equity"] = float(properties[0].legacy_fund_equity)
+        except:
+            ret_json["legacy fund equity"] = ""
+
+        try:
+            ret_json["mlg historical equity"] = float(properties[0].mlg_historical_equity)
+        except:
+            ret_json["mlg historical equity"] = ""
+
+        try:
+            ret_json["status"] = properties[i].status
+        except:
+            ret_json["status"] = ""
+
+        try:
+            ret_json["report_level"] = properties[i].report_level
+        except:
+            ret_json["report_level"] = ""
+
+        try:
+            ret_json["is_property"] = properties[i].is_property
+        except:
+            ret_json["is_property"] = ""
+
+        master.append(ret_json)
+    # return json
+    return json.dumps(master)
+
+
+
 @api.route('/yardi')
 def yardi():
     """
